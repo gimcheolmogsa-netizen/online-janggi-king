@@ -1,5 +1,6 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>온라인 장기왕 WEB 30차</title><style>
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>온라인 장기왕 WEB 31차</title><style>
 *{box-sizing:border-box}body{margin:0;background:#10151d;color:#fff;font-family:system-ui,"Malgun Gothic",sans-serif}
 header{text-align:center;padding:14px;background:#1d2635}h1{margin:0;font-size:clamp(24px,4vw,38px)}.sub{color:#aeb9ca}
 main{max-width:1100px;margin:auto;padding:14px}.top{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
@@ -63,15 +64,15 @@ button,input,select{font-size:16px}
  #onlineOverlay button,#matchRoom25 button{min-height:46px}
 }
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head><body><header><h1>🏯 온라인 장기왕 WEB</h1><div class=sub>30차 · 스마트폰 공개용 · 온라인 2인 대국 · Supabase</div></header>
+</head><body><header><h1>🏯 온라인 장기왕 WEB</h1><div class="sub">31차 · 스마트폰 공개용 · 서버 자동연결 준비 · Supabase</div></header>
 <nav style="position:sticky;top:0;z-index:20;background:#151d29;border-bottom:1px solid #344055;padding:9px;display:flex;gap:7px;justify-content:center;flex-wrap:wrap">
 <button class="gold" onclick="showPage('game')">⚔️ AI 대국</button>
-<button class="dark" onclick="showPage('online')">🌐 온라인 대국</button>
+<button class="dark menu-active" onclick="showPage('online')">🌐 온라인 대국</button>
 <button class="dark" onclick="showPage('ranking')">🏆 랭킹</button>
 <button class="dark" onclick="showPage('shop')">🛍️ 상점</button>
 <button class="dark" onclick="showPage('mypage')">👤 내 정보</button>
 </nav>
-<div id="portal" style="max-width:1100px;margin:14px auto;padding:0 14px"></div>
+<div id="portal" style="max-width:1100px;margin:14px auto;padding:0 14px"><section class="hero"><span class="badge">31차 PUBLIC TEST</span><h2>🌐 실시간 온라인 대국</h2><p>서버에 연결한 뒤 실제 대국방을 만들거나 참가할 수 있습니다.</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="gold" onclick="openOnlineLobby()">🚪 온라인 대국방 들어가기</button><button class="dark" onclick="openServer23()">🔌 서버 설정</button></div></section><div class="tiles"><div class="tile"><b>⚡ 빠른 매칭</b><p>비슷한 실력의 상대와 자동 매칭</p></div><div class="tile"><b>👥 친구 대국</b><p>방 번호로 지인과 바로 대국</p></div><div class="tile"><b>👁️ 관전실</b><p>인기 대국을 함께 관전</p></div></div></div>
 <div id="public30Notice" style="max-width:1100px;margin:0 auto 10px;padding:0 14px;text-align:center;color:#aeb9ca;font-size:13px">📱 스마트폰에서는 링크를 열고 닉네임을 정한 뒤 온라인 대국방에 입장하세요.</div>
 
 
@@ -80,7 +81,7 @@ button,input,select{font-size:16px}
 
 
 
-<div id="serverOverlay" style="display:none;position:fixed;inset:0;background:#050a12ee;z-index:100002;align-items:center;justify-content:center;padding:18px">
+<div id="serverOverlay" style="display: flex; position: fixed; inset: 0px; background: rgba(5, 10, 18, 0.933); z-index: 100002; align-items: center; justify-content: center; padding: 18px;">
  <div style="width:min(620px,95vw);max-height:90vh;overflow:auto;background:#182334;border:1px solid #52657f;border-radius:24px;padding:24px;box-shadow:0 22px 75px #000">
   <h2 style="margin-top:0">🔌 온라인 서버 연결</h2>
   <p style="opacity:.75">Supabase 프로젝트의 주소와 Publishable Key를 넣으면 연결을 시험할 수 있습니다.</p>
@@ -88,24 +89,28 @@ button,input,select{font-size:16px}
   <input id="sbUrl23" placeholder="https://xxxx.supabase.co" style="box-sizing:border-box;width:100%;margin:7px 0 13px;padding:12px;border-radius:10px;border:1px solid #52657f;background:#101722;color:white">
   <label><b>Publishable Key</b></label>
   <input id="sbKey23" type="password" placeholder="sb_publishable_..." style="box-sizing:border-box;width:100%;margin:7px 0 13px;padding:12px;border-radius:10px;border:1px solid #52657f;background:#101722;color:white">
-  <div id="serverStatus23" style="padding:12px;border-radius:12px;background:#101722;margin-bottom:12px">⚪ 아직 서버가 연결되지 않았습니다.</div>
+  <div id="serverStatus23" style="padding:12px;border-radius:12px;background:#101722;margin-bottom:12px">🟡 설정이 저장되어 있습니다. 연결 테스트를 눌러 확인하세요.</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
    <button class="gold" onclick="saveServer23()">💾 저장 + 연결 테스트</button>
    <button class="dark" onclick="clearServer23()">🗑 설정 지우기</button>
   </div>
-  <button id="serverClose23" class="dark" style="width:100%;margin-top:9px">닫기</button>
+  <button id="makePublic31Btn" class="gold" style="width:100%;margin-top:9px" onclick="makePublicIndex31()">📦 공개용 index.html 만들기</button>
+   <div id="makePublic31Status" style="font-size:12px;opacity:.75;margin-top:7px;line-height:1.5">
+    PC에 저장된 Publishable Key를 이용해 새 스마트폰에서도 자동 연결되는 공개용 index.html을 만듭니다.
+   </div>
+   <button id="serverClose23" class="dark" style="width:100%;margin-top:9px">닫기</button>
   
   <details style="margin-top:12px;background:#101722;border-radius:12px;padding:12px">
    <summary style="cursor:pointer;font-weight:800">👥 25차 최초 1회: 2인 접속 칸 추가</summary>
    <p style="font-size:13px;opacity:.8">이미 24차 SQL을 실행했다면 이것만 SQL Editor에서 한 번 실행하세요.</p>
-   <textarea id="sql25" readonly style="box-sizing:border-box;width:100%;height:95px;background:#08101b;color:#dce8f8;border:1px solid #40536c;border-radius:9px;padding:9px;font-size:12px">alter table public.janggi_rooms add column if not exists host_id text;
+   <textarea id="sql25" readonly="" style="box-sizing:border-box;width:100%;height:95px;background:#08101b;color:#dce8f8;border:1px solid #40536c;border-radius:9px;padding:9px;font-size:12px">alter table public.janggi_rooms add column if not exists host_id text;
 alter table public.janggi_rooms add column if not exists guest_id text;</textarea>
    <button class="dark" style="width:100%;margin-top:7px" onclick="copySql25()">📋 25차 SQL 복사</button>
   </details>
 <details style="margin-top:12px;background:#101722;border-radius:12px;padding:12px">
    <summary style="cursor:pointer;font-weight:800">🧱 24차 최초 1회: 대국방 테이블 만들기</summary>
    <p style="font-size:13px;opacity:.8">Supabase → SQL Editor → New query에서 아래 SQL을 실행하세요.</p>
-   <textarea id="sql24" readonly style="box-sizing:border-box;width:100%;height:190px;background:#08101b;color:#dce8f8;border:1px solid #40536c;border-radius:9px;padding:9px;font-size:12px">create table if not exists public.janggi_rooms (
+   <textarea id="sql24" readonly="" style="box-sizing:border-box;width:100%;height:190px;background:#08101b;color:#dce8f8;border:1px solid #40536c;border-radius:9px;padding:9px;font-size:12px">create table if not exists public.janggi_rooms (
  id bigint generated by default as identity primary key,
  title text not null,
  host_nickname text not null,
@@ -131,8 +136,7 @@ create policy "rooms_update" on public.janggi_rooms for update to anon using (tr
    <p style="opacity:.7">사용할 닉네임을 정해주세요.</p>
   </div>
   <label style="font-weight:800">닉네임</label>
-  <input id="nicknameInput" maxlength="12" placeholder="예: 장기왕철이"
-    style="box-sizing:border-box;width:100%;margin:8px 0 12px;padding:14px;border-radius:12px;border:1px solid #52657f;background:#101722;color:white;font-size:17px">
+  <input id="nicknameInput" maxlength="12" placeholder="예: 장기왕철이" style="box-sizing:border-box;width:100%;margin:8px 0 12px;padding:14px;border-radius:12px;border:1px solid #52657f;background:#101722;color:white;font-size:17px">
   <div id="nicknameHint" style="min-height:22px;font-size:13px;opacity:.75">2~12자로 입력하세요.</div>
   <button id="nicknameSaveBtn" class="gold" style="width:100%;margin-top:10px;padding:13px">닉네임 저장</button>
   <button id="loginCloseBtn" class="dark" style="width:100%;margin-top:8px;padding:11px">나중에 하기</button>
@@ -140,10 +144,10 @@ create policy "rooms_update" on public.janggi_rooms for update to anon using (tr
  </div>
 </div>
 
-<div id="onlineOverlay" style="display:none;position:fixed;inset:0;background:#050a12ee;z-index:99997;align-items:center;justify-content:center;padding:18px">
+<div id="onlineOverlay" style="display: flex; position: fixed; inset: 0px; background: rgba(5, 10, 18, 0.933); z-index: 99997; align-items: center; justify-content: center; padding: 18px;">
  <div style="width:min(900px,97vw);max-height:91vh;overflow:auto;background:#182334;border:1px solid #52657f;border-radius:24px;padding:22px;box-shadow:0 22px 75px #000">
   <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-   <div><h2 style="margin:0">🌐 온라인 대국</h2><small style="opacity:.7"><b data-player-name>장기왕 플레이어</b>님의 온라인 대국 로비</small></div>
+   <div><h2 style="margin:0">🌐 온라인 대국</h2><small style="opacity:.7"><b data-player-name="">장기왕 플레이어</b>님의 온라인 대국 로비</small></div>
    <div style="display:flex;gap:7px"><button class="dark" onclick="openServer23()">🔌 서버 설정</button><button id="onlineCloseBtn" class="dark">✕ 닫기</button></div>
   </div>
   <div style="display:flex;gap:8px;align-items:center;margin:14px 0;padding:11px 14px;background:#101722;border-radius:14px">
@@ -156,12 +160,54 @@ create policy "rooms_update" on public.janggi_rooms for update to anon using (tr
    <button class="dark" style="min-height:105px;font-size:18px" onclick="joinRoom24()">🔑<br><b>방 참가하기</b><br><small>방 번호로 참가</small></button>
    <button class="dark" style="min-height:105px;font-size:18px" onclick="friendMatchDemo()">👥<br><b>친구와 대전</b><br><small>친구 초대 준비</small></button>
   </div>
-  <div id="onlineStatus" style="margin:14px 0;padding:12px 14px;border-radius:13px;background:#101722">💬 원하는 대국 방식을 선택하세요.</div>
+  <div id="onlineStatus" style="margin:14px 0;padding:12px 14px;border-radius:13px;background:#101722">🟢 <b>온라인 서버 연결됨</b> · 실시간 대국 기능 준비 중</div>
   <h3 style="margin-bottom:8px">📋 대국방 목록</h3>
-  <div id="roomList"></div>
+  <div id="roomList"><div style="display:grid;grid-template-columns:70px 1fr 1fr 85px 90px;gap:7px;align-items:center;background:#101722;border:1px solid #2f4159;border-radius:12px;padding:10px;margin:7px 0">
+ <b>#14</b><span>테스트</span><small>👑 장기왕 플레이어</small>
+ <span>🟢 대기</span>
+ <button class="dark" onclick="joinServerRoom24('14')">참가</button></div><div style="display:grid;grid-template-columns:70px 1fr 1fr 85px 90px;gap:7px;align-items:center;background:#101722;border:1px solid #2f4159;border-radius:12px;padding:10px;margin:7px 0">
+ <b>#13</b><span>테스트</span><small>👑 장기왕 플레이어</small>
+ <span>🟢 대기</span>
+ <button class="dark" onclick="joinServerRoom24('13')">참가</button></div><div style="display:grid;grid-template-columns:70px 1fr 1fr 85px 90px;gap:7px;align-items:center;background:#101722;border:1px solid #2f4159;border-radius:12px;padding:10px;margin:7px 0">
+ <b>#12</b><span>테스트</span><small>👑 장기왕 플레이어</small>
+ <span>⚔️ 대국중</span>
+ <span style="opacity:.55">입장불가</span></div><div style="display:grid;grid-template-columns:70px 1fr 1fr 85px 90px;gap:7px;align-items:center;background:#101722;border:1px solid #2f4159;border-radius:12px;padding:10px;margin:7px 0">
+ <b>#11</b><span>테스트</span><small>👑 장기왕 플레이어</small>
+ <span>⚔️ 대국중</span>
+ <span style="opacity:.55">입장불가</span></div><div style="display:grid;grid-template-columns:70px 1fr 1fr 85px 90px;gap:7px;align-items:center;background:#101722;border:1px solid #2f4159;border-radius:12px;padding:10px;margin:7px 0">
+ <b>#10</b><span>즐겁게 한판</span><small>👑 장기왕 플레이어</small>
+ <span>⚔️ 대국중</span>
+ <span style="opacity:.55">입장불가</span></div><div style="display:grid;grid-template-columns:70px 1fr 1fr 85px 90px;gap:7px;align-items:center;background:#101722;border:1px solid #2f4159;border-radius:12px;padding:10px;margin:7px 0">
+ <b>#9</b><span>즐겁게 한판</span><small>👑 장기왕 플레이어</small>
+ <span>🟢 대기</span>
+ <button class="dark" onclick="joinServerRoom24('9')">참가</button></div><div style="display:grid;grid-template-columns:70px 1fr 1fr 85px 90px;gap:7px;align-items:center;background:#101722;border:1px solid #2f4159;border-radius:12px;padding:10px;margin:7px 0">
+ <b>#8</b><span>27차테스트</span><small>👑 장기왕 플레이어</small>
+ <span>⚔️ 대국중</span>
+ <span style="opacity:.55">입장불가</span></div><div style="display:grid;grid-template-columns:70px 1fr 1fr 85px 90px;gap:7px;align-items:center;background:#101722;border:1px solid #2f4159;border-radius:12px;padding:10px;margin:7px 0">
+ <b>#7</b><span>26차 스크롤 고정방2</span><small>👑 장기왕 플레이어</small>
+ <span>⚔️ 대국중</span>
+ <span style="opacity:.55">입장불가</span></div><div style="display:grid;grid-template-columns:70px 1fr 1fr 85px 90px;gap:7px;align-items:center;background:#101722;border:1px solid #2f4159;border-radius:12px;padding:10px;margin:7px 0">
+ <b>#6</b><span>26차 스크롤고정방</span><small>👑 장기왕 플레이어</small>
+ <span>⚔️ 대국중</span>
+ <span style="opacity:.55">입장불가</span></div><div style="display:grid;grid-template-columns:70px 1fr 1fr 85px 90px;gap:7px;align-items:center;background:#101722;border:1px solid #2f4159;border-radius:12px;padding:10px;margin:7px 0">
+ <b>#5</b><span>26차 최종 테스트방</span><small>👑 장기왕 플레이어</small>
+ <span>⚔️ 대국중</span>
+ <span style="opacity:.55">입장불가</span></div><div style="display:grid;grid-template-columns:70px 1fr 1fr 85px 90px;gap:7px;align-items:center;background:#101722;border:1px solid #2f4159;border-radius:12px;padding:10px;margin:7px 0">
+ <b>#4</b><span>26차 2번째 테스트방</span><small>👑 장기왕 플레이어</small>
+ <span>⚔️ 대국중</span>
+ <span style="opacity:.55">입장불가</span></div><div style="display:grid;grid-template-columns:70px 1fr 1fr 85px 90px;gap:7px;align-items:center;background:#101722;border:1px solid #2f4159;border-radius:12px;padding:10px;margin:7px 0">
+ <b>#3</b><span>26차 실시간 테스트방</span><small>👑 장기왕 플레이어</small>
+ <span>⚔️ 대국중</span>
+ <span style="opacity:.55">입장불가</span></div><div style="display:grid;grid-template-columns:70px 1fr 1fr 85px 90px;gap:7px;align-items:center;background:#101722;border:1px solid #2f4159;border-radius:12px;padding:10px;margin:7px 0">
+ <b>#2</b><span>25차 테스트방</span><small>👑 장기왕 플레이어</small>
+ <span>⚔️ 대국중</span>
+ <span style="opacity:.55">입장불가</span></div><div style="display:grid;grid-template-columns:70px 1fr 1fr 85px 90px;gap:7px;align-items:center;background:#101722;border:1px solid #2f4159;border-radius:12px;padding:10px;margin:7px 0">
+ <b>#1</b><span>철이 테스트방</span><small>👑 장기왕 플레이어</small>
+ <span>🟢 대기</span>
+ <button class="dark" onclick="joinServerRoom24('1')">참가</button></div></div>
   <button class="dark" style="width:100%;margin-top:8px" onclick="loadRooms24()">🔄 서버 대국방 새로고침</button>
   <div style="margin-top:15px;padding:12px;border-radius:13px;background:#101722;opacity:.8">
-   ℹ️ 30차 공개 테스트: 방장과 참가자의 장기판/차례/착수를 서버에서 동기화합니다. 서버 준비가 끝난 뒤 새 방으로 테스트하세요.
+   ℹ️ 31차 공개 테스트: 방장과 참가자의 장기판/차례/착수를 서버에서 동기화합니다. 서버 준비가 끝난 뒤 새 방으로 테스트하세요.
   </div>
  </div>
 </div>
@@ -202,12 +248,12 @@ create policy "rooms_update" on public.janggi_rooms for update to anon using (tr
 <div id="rankOverlay" style="display:none;position:fixed;inset:0;background:#050a12e8;z-index:99998;align-items:center;justify-content:center;padding:20px">
  <div style="width:min(650px,95vw);max-height:86vh;overflow:auto;background:#182334;border:1px solid #52657f;border-radius:24px;padding:25px;box-shadow:0 20px 70px #000">
   <h2 style="margin-top:0">🏆 장기왕 랭킹</h2>
-  <div id="myRatingCard" style="background:#101722;border-radius:16px;padding:16px;margin-bottom:14px"></div>
+  <div id="myRatingCard" style="background:#101722;border-radius:16px;padding:16px;margin-bottom:14px"><b style="font-size:22px">🥉 초보</b><br>레이팅 <b>1072</b>점</div>
   <div id="rankList"></div>
   <div style="text-align:center;margin-top:18px"><button class="gold" onclick="closeRank()">확인</button></div>
  </div>
 </div>
-<div id="promotionToast" style="display:none;position:fixed;left:50%;top:18%;transform:translateX(-50%);z-index:100000;background:#ffd257;color:#182033;padding:18px 28px;border-radius:18px;font-size:25px;font-weight:900;box-shadow:0 12px 45px #000">🎉 승급!</div>
+<div id="promotionToast" style="display: none !important; position: fixed; left: 50%; top: 18%; transform: translateX(-50%); z-index: 100000; background: rgb(255, 210, 87); color: rgb(24, 32, 51); padding: 18px 28px; border-radius: 18px; font-size: 25px; font-weight: 900; box-shadow: rgb(0, 0, 0) 0px 12px 45px; opacity: 0; pointer-events: none;">🎉 승급!</div>
 
 <div id="resultOverlay" style="display:none;position:fixed;inset:0;background:#050a12dd;z-index:99999;align-items:center;justify-content:center;padding:20px">
  <div style="width:min(520px,94vw);background:#182334;border:1px solid #53657e;border-radius:24px;padding:28px;text-align:center;box-shadow:0 20px 70px #000">
@@ -220,7 +266,7 @@ create policy "rooms_update" on public.janggi_rooms for update to anon using (tr
  </div>
 </div>
 
-<div id="startOverlay" style="position:fixed;inset:0;background:#07101beF;z-index:999;display:flex;align-items:center;justify-content:center;padding:20px">
+<div id="startOverlay" style="position: fixed; inset: 0px; background: rgba(7, 16, 27, 0.937); z-index: 999; display: none; align-items: center; justify-content: center; padding: 20px;">
 <div style="max-width:520px;width:100%;background:#172131;border:1px solid #4b5e78;border-radius:24px;padding:28px;text-align:center;box-shadow:0 20px 70px #000">
 <div style="font-size:58px">🏯</div><h1 style="margin:5px 0;font-size:36px">온라인 장기왕</h1>
 <p style="opacity:.8">진형을 고르고 장기왕에 도전하세요!</p>
@@ -233,34 +279,34 @@ create policy "rooms_update" on public.janggi_rooms for update to anon using (tr
 <div id="careerPanel" style="max-width:965px;margin:12px auto;background:#182334;border:1px solid #33445c;border-radius:18px;padding:15px">
  <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">
   <b style="font-size:19px">📊 나의 대국 통계</b>
-  <span id="careerSummary">전적을 불러오는 중...</span>
+  <span id="careerSummary">🥉 초보 1072점 · 총 5전 5승 0패 · 승률 100% · 현재 5연승 · 최고 5연승</span>
   <button class="dark" onclick="showRecentMatches()">🗂 최근 대국</button>
  </div>
 </div>
 
-<main id="gamePage"><section class=hero><span class=badge>온라인 장기왕</span><h2>⚔️ AI 대국실</h2><p>대국하고 성장하여 최고의 장기왕에 도전하세요!</p></section><div class=top><button class=gold onclick="reset()">AI와 새 대국</button><button class=dark onclick="flip=!flip;render()">판 뒤집기</button><button class=dark onclick="undo()">한 수 무르기</button><select id="formation" onchange="changeFormation(this.value)" style="border:0;border-radius:10px;padding:10px;font-weight:800">
+<main id="gamePage" style="display: none;"><section class="hero"><span class="badge">온라인 장기왕</span><h2>⚔️ AI 대국실</h2><p>대국하고 성장하여 최고의 장기왕에 도전하세요!</p></section><div class="top"><button class="gold" onclick="reset()">AI와 새 대국</button><button class="dark" onclick="flip=!flip;render()">판 뒤집기</button><button class="dark" onclick="undo()">한 수 무르기</button><select id="formation" onchange="changeFormation(this.value)" style="border:0;border-radius:10px;padding:10px;font-weight:800">
 <option value="MSMS">마상마상</option>
 <option value="MSSM">마상상마</option>
 <option value="SMMS">상마마상</option>
 <option value="SMSM">상마상마</option>
-</select><select id="difficulty" onchange="setDifficulty(this.value)" style="border:0;border-radius:10px;padding:10px;font-weight:800"><option value="easy">AI 초급 😊</option><option value="normal" selected>AI 중급 ⚔️</option><option value="hard">AI 고급 👑</option></select><button class="dark" onclick="newMatch()">🔄 새 대국</button>
+</select><select id="difficulty" onchange="setDifficulty(this.value)" style="border:0;border-radius:10px;padding:10px;font-weight:800"><option value="easy">AI 초급 😊</option><option value="normal" selected="">AI 중급 ⚔️</option><option value="hard">AI 고급 👑</option></select><button class="dark" onclick="newMatch()">🔄 새 대국</button>
 <button class="dark" onclick="resignMatch()">🏳️ 기권</button>
 <button class="dark" onclick="passTurn()">⏭️ 한수쉼</button>
 <button class="dark" onclick="showScore()">🧮 계가</button>
 <button class="dark" onclick="offerDraw()">🤝 무승부</button>
 <button class="dark" onclick="showNotation()">📜 기보</button>
-<button id="sfxBtn" class=dark onclick="toggleSfx()">🔊 착수음 ON</button><button id="bgmBtn" class=dark onclick="toggleBgm()">🎵 BGM ON</button></div>
-<div id=status></div><div class=layout><aside class="card side"><h3>👑 나의 장기왕</h3>
-<div id="profile" style="font-weight:900;line-height:1.8"></div>
-<div class=small>대국을 하며 경험치와 포인트를 모으세요.<br>기록은 이 브라우저에 자동 저장됩니다.</div>
+<button id="sfxBtn" class="dark" onclick="toggleSfx()">🔊 착수음 ON</button><button id="bgmBtn" class="dark" onclick="toggleBgm()">🎵 BGM ON</button></div>
+<div id="status">🔵 내 차례</div><div class="layout"><aside class="card side"><h3>👑 나의 장기왕</h3>
+<div id="profile" style="font-weight:900;line-height:1.8">Lv.3 도전자<br>💰 540P　🔥 0연승<br>전적 3승 12패 · 최고 2연승<br>EXP 60/150</div>
+<div class="small">대국을 하며 경험치와 포인트를 모으세요.<br>기록은 이 브라우저에 자동 저장됩니다.</div>
 <hr style="border-color:#344055"><h3>🏆 오늘의 로컬 랭킹</h3>
-<div id="rank" class=small></div></aside>
-<div class=boardwrap><div id=b></div></div><aside class="card side"><h3>🎯 오늘의 목표</h3>
-<div id="missions" class=small></div>
+<div id="rank" class="small">1위 👑 장기왕 도전자 — 430점<br>2위 🤖 한나라 AI — 395점<br>3위 🌱 연습생 — 340점</div></aside>
+<div class="boardwrap"><div id="b"><i class="l v" style="left: 5.5%;"></i><i class="l v" style="left: 16.625%;"></i><i class="l v" style="left: 27.75%;"></i><i class="l v" style="left: 38.875%;"></i><i class="l v" style="left: 50%;"></i><i class="l v" style="left: 61.125%;"></i><i class="l v" style="left: 72.25%;"></i><i class="l v" style="left: 83.375%;"></i><i class="l v" style="left: 94.5%;"></i><i class="l h" style="top: 5%;"></i><i class="l h" style="top: 15%;"></i><i class="l h" style="top: 25%;"></i><i class="l h" style="top: 35%;"></i><i class="l h" style="top: 45%;"></i><i class="l h" style="top: 55%;"></i><i class="l h" style="top: 65%;"></i><i class="l h" style="top: 75%;"></i><i class="l h" style="top: 85%;"></i><i class="l h" style="top: 95%;"></i><div class="p blue" data-id="1124fd8c-4423-4b4a-823b-5862799be83e" style="left: 5.5%; top: 95%;">車</div><div class="p blue" data-id="1b578698-752c-4bcf-bfeb-2b62a455f9a6" style="left: 16.625%; top: 95%;">馬</div><div class="p blue" data-id="54ab9f8d-9ee0-49da-a0c5-8c30d0cc2554" style="left: 27.75%; top: 95%;">象</div><div class="p blue" data-id="ea2a6a30-8c49-4bf9-9000-dfa12f68a4fe" style="left: 38.875%; top: 95%;">士</div><div class="p blue" data-id="060c05ae-0b08-44ec-a4df-bafdf6047a97" style="left: 61.125%; top: 95%;">士</div><div class="p blue" data-id="5a91ee7c-5634-4867-8ac0-2eba30340e79" style="left: 72.25%; top: 95%;">馬</div><div class="p blue" data-id="6e54ebd5-7a71-42e1-a9f7-9b288ba763d2" style="left: 83.375%; top: 95%;">象</div><div class="p blue" data-id="8e030a96-c12a-4aac-bb27-72837daa8cf0" style="left: 94.5%; top: 95%;">車</div><div class="p blue" data-id="1c2ed2d5-5980-4b0f-bed7-3c472aa36331" style="left: 50%; top: 85%;">楚</div><div class="p blue" data-id="7ad0b0f6-8283-4df6-8e53-675e1d393e7b" style="left: 16.625%; top: 75%;">包</div><div class="p blue" data-id="d689a79a-ce26-46d7-9542-d85f590b1dc6" style="left: 83.375%; top: 75%;">包</div><div class="p blue" data-id="b593f235-55e0-4c29-9333-7c5d55f4ee74" style="left: 5.5%; top: 65%;">卒</div><div class="p blue" data-id="c1c3f48b-ce2b-4593-9db7-f1965f633fb4" style="left: 27.75%; top: 65%;">卒</div><div class="p blue" data-id="26d506b1-0427-42e5-9299-737f7eee8d04" style="left: 50%; top: 65%;">卒</div><div class="p blue" data-id="55b856ea-8216-480d-b550-3e1a7f7db6c9" style="left: 72.25%; top: 65%;">卒</div><div class="p blue" data-id="05d47923-a918-43a8-b5df-ffbdb756fa23" style="left: 94.5%; top: 65%;">卒</div><div class="p red" data-id="dce9abca-7c1a-4d98-94f9-2cdffcae1bd8" style="left: 5.5%; top: 5%;">車</div><div class="p red" data-id="547be463-6879-497e-8229-c11e046b0e36" style="left: 16.625%; top: 5%;">象</div><div class="p red" data-id="cf09ce98-0802-4baa-9020-772a5114801f" style="left: 27.75%; top: 5%;">馬</div><div class="p red" data-id="2d0cf06d-4b94-4636-9f1e-eea8343630f7" style="left: 38.875%; top: 5%;">士</div><div class="p red" data-id="177b9cbd-0d72-4fe3-a2b4-7b5a73a5d209" style="left: 61.125%; top: 5%;">士</div><div class="p red" data-id="8b54cb61-0d23-4fc1-a8ab-232ffd4106e6" style="left: 72.25%; top: 5%;">象</div><div class="p red" data-id="04faac08-84d9-47a9-af7a-1e83ee87fa29" style="left: 83.375%; top: 5%;">馬</div><div class="p red" data-id="173f8c88-c44f-4b68-b254-44fbd4aa8527" style="left: 94.5%; top: 5%;">車</div><div class="p red" data-id="729296fe-a564-4672-97a0-9aaca279356c" style="left: 50%; top: 15%;">漢</div><div class="p red" data-id="05fc31ea-cf49-4040-b8d2-856393c15170" style="left: 16.625%; top: 25%;">包</div><div class="p red" data-id="9594c98c-25a2-4b9b-b60c-9a19b52e2974" style="left: 83.375%; top: 25%;">包</div><div class="p red" data-id="f00d9b19-3658-4c90-b304-55caf3bf1caf" style="left: 5.5%; top: 35%;">兵</div><div class="p red" data-id="b4009296-1c70-4906-bb70-acdd5f7b19e3" style="left: 27.75%; top: 35%;">兵</div><div class="p red" data-id="62f5c8bb-348e-4693-9e76-94bd90c4fda1" style="left: 50%; top: 35%;">兵</div><div class="p red" data-id="6a0b410c-8d02-45ba-b258-8056f55f8562" style="left: 72.25%; top: 35%;">兵</div><div class="p red" data-id="9772f15a-bba4-42b2-aebd-4d97c09fcf39" style="left: 94.5%; top: 35%;">兵</div></div></div><aside class="card side"><h3>🎯 오늘의 목표</h3>
+<div id="missions" class="small">✅ 오늘 대국 1판<br>✅ 첫 승리 달성<br>⬜ 2연승 도전</div>
 <hr style="border-color:#344055"><h3>🎁 대국 보상</h3>
-<div class=small>승리: +100P / +60 EXP<br>패배: +20P / +15 EXP<br>연승할수록 장기왕 등급이 올라갑니다.</div>
+<div class="small">승리: +100P / +60 EXP<br>패배: +20P / +15 EXP<br>연승할수록 장기왕 등급이 올라갑니다.</div>
 <hr style="border-color:#344055"><h3>🔴 컴퓨터 · 한(漢)</h3>
-<div class=small>초급 AI와 부담 없이 대국하세요.<br>다음 단계에서는 AI 난이도와 정확한 장군 판정을 강화합니다.</div></aside></div></main>
+<div class="small">초급 AI와 부담 없이 대국하세요.<br>다음 단계에서는 AI 난이도와 정확한 장군 판정을 강화합니다.</div></aside></div></main>
 <script>
 const B=document.querySelector('#b'),ST=document.querySelector('#status');let P=[],turn='blue',sel=null,H=[],flip=false,over=false;
 const N={K:'楚',R:'車',H:'馬',E:'象',A:'士',C:'包',P:'卒',k:'漢',r:'車',h:'馬',e:'象',a:'士',c:'包',p:'兵'};
@@ -510,7 +556,7 @@ function showPage(page){
  const portal=document.querySelector('#portal'), game=document.querySelector('#gamePage');
  if(page==='game'){portal.innerHTML='';game.style.display='block';setTimeout(skinStyle,30);window.scrollTo({top:0,behavior:'smooth'});return}
  game.style.display='none';
- if(page==='online') portal.innerHTML=`<section class=hero><span class=badge>30차 PUBLIC TEST</span><h2>🌐 실시간 온라인 대국</h2><p>서버에 연결한 뒤 실제 대국방을 만들거나 참가할 수 있습니다.</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class=gold onclick="openOnlineLobby()">🚪 온라인 대국방 들어가기</button><button class=dark onclick="openServer23()">🔌 서버 설정</button></div></section><div class=tiles><div class=tile><b>⚡ 빠른 매칭</b><p>비슷한 실력의 상대와 자동 매칭</p></div><div class=tile><b>👥 친구 대국</b><p>방 번호로 지인과 바로 대국</p></div><div class=tile><b>👁️ 관전실</b><p>인기 대국을 함께 관전</p></div></div>`;
+ if(page==='online') portal.innerHTML=`<section class=hero><span class=badge>31차 PUBLIC TEST</span><h2>🌐 실시간 온라인 대국</h2><p>서버에 연결한 뒤 실제 대국방을 만들거나 참가할 수 있습니다.</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class=gold onclick="openOnlineLobby()">🚪 온라인 대국방 들어가기</button><button class=dark onclick="openServer23()">🔌 서버 설정</button></div></section><div class=tiles><div class=tile><b>⚡ 빠른 매칭</b><p>비슷한 실력의 상대와 자동 매칭</p></div><div class=tile><b>👥 친구 대국</b><p>방 번호로 지인과 바로 대국</p></div><div class=tile><b>👁️ 관전실</b><p>인기 대국을 함께 관전</p></div></div>`;
  if(page==='ranking') portal.innerHTML=`<section class=hero><h2>🏆 장기왕 랭킹</h2><p>시즌 경쟁으로 장기왕에 도전하세요.</p></section><div class=card style="font-size:18px;line-height:2.2">🥇 1위　천하장기왕　2450<br>🥈 2위　초나라명인　2310<br>🥉 3위　한수고수　2195<br>⭐ 나　${stats.w*100+stats.best*35+level()*20}점</div>`;
  if(page==='shop') portal.innerHTML=`<section class=hero><h2>🛍️ 장기왕 상점</h2><p>대국 포인트로 장기판을 꾸며보세요. 현재 보유 ${stats.point}P</p></section><div class=tiles>
  ${shopTile('🌳','고급 원목 장기판',300)}${shopTile('🌙','달빛 궁궐 장기판',600)}${shopTile('👑','황금 장기왕 세트',1200)}</div>`;
@@ -1647,7 +1693,7 @@ button,select,input{min-height:46px;font-size:16px}
 /* ---- 28차: 모바일 편의 기능 ---- */
 (function(){
  const PROJECT_URL_28='https://rceyqbtsnhhpoiyekstg.supabase.co';
- const PUBLISHABLE_KEY_29='여기에_Publishable_Key를_붙여넣으세요';
+ const PUBLISHABLE_KEY_29='sb_publishable_VpgBK8rkRAEra9153jTRIA_UetqAKvK';
  function prefill28(){
    try{
      const u=document.getElementById('sbUrl23');
@@ -1670,6 +1716,43 @@ button,select,input{min-height:46px;font-size:16px}
    const old=window.openServer23;
    if(typeof old==='function') window.openServer23=function(){const r=old.apply(this,arguments);setTimeout(prefill28,20);return r};
  });
+
+ // ---- 31차: 운영자 PC에서 공개 배포용 index.html 자동 생성 ----
+ window.makePublicIndex31=function(){
+   const st=document.getElementById('makePublic31Status');
+   try{
+     const saved=JSON.parse(localStorage.getItem('janggiKingServer23')||'{}');
+     const key=(saved.key||'').trim();
+     const url=(saved.url||PROJECT_URL_28).trim();
+     if(!key || key.length<20){
+       if(st)st.innerHTML='⚠️ 이 PC에 저장된 Publishable Key가 없습니다.<br>먼저 위 서버 설정에서 Publishable Key를 넣고 <b>저장 + 연결 테스트</b>를 한 번 눌러주세요.';
+       return;
+     }
+     if(key.startsWith('eyJ')===false && key.startsWith('sb_publishable_')===false){
+       if(st)st.textContent='⚠️ 저장된 키 형식을 확인해주세요. Secret/Service Role Key는 사용하지 마세요.';
+       return;
+     }
+     let html='<!doctype html>\n'+document.documentElement.outerHTML;
+     html=html.replace(
+       /const PUBLISHABLE_KEY_29='[^']*';/,
+       "const PUBLISHABLE_KEY_29='"+key.replace(/\\/g,'\\\\').replace(/'/g,"\\'")+"';"
+     );
+     html=html.replace(
+       /const PROJECT_URL_28='[^']*';/,
+       "const PROJECT_URL_28='"+url.replace(/\\/g,'\\\\').replace(/'/g,"\\'")+"';"
+     );
+     const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+     const a=document.createElement('a');
+     a.href=URL.createObjectURL(blob);
+     a.download='index.html';
+     document.body.appendChild(a);a.click();a.remove();
+     setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+     if(st)st.innerHTML='✅ <b>index.html 생성 완료!</b><br>이 파일을 GitHub 저장소에 기존 index.html 대신 올리면 새 스마트폰도 자동 서버 연결됩니다.';
+   }catch(e){
+     if(st)st.textContent='🔴 공개용 파일 생성 오류: '+(e&&e.message?e.message:e);
+   }
+ };
+
  // 회전/복귀 후 장기판이 화면 폭에 맞도록 다시 그린다.
  window.addEventListener('orientationchange',()=>setTimeout(()=>{try{render()}catch(e){}},250));
  window.addEventListener('pageshow',()=>setTimeout(prefill28,30));
