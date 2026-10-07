@@ -1,0 +1,1598 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>온라인 장기왕 WEB 2차</title><style>
+*{box-sizing:border-box}body{margin:0;background:#10151d;color:#fff;font-family:system-ui,"Malgun Gothic",sans-serif}
+header{text-align:center;padding:14px;background:#1d2635}h1{margin:0;font-size:clamp(24px,4vw,38px)}.sub{color:#aeb9ca}
+main{max-width:1100px;margin:auto;padding:14px}.top{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer}.gold{background:#ffd166}.dark{background:#313d50;color:#fff}
+#status{text-align:center;font-weight:900;font-size:18px;min-height:32px}.layout{display:grid;grid-template-columns:1fr minmax(330px,650px) 1fr;gap:12px;align-items:start}
+.card{background:#1b2330;border-radius:14px;padding:13px}.card h3{margin:0 0 8px}.boardwrap{display:flex;justify-content:center}
+#b{position:relative;width:min(92vw,630px);aspect-ratio:9/10;background:#d8a95b;border:8px solid #70431d;border-radius:6px}
+.l{position:absolute;background:#71451e}.v{width:2px;top:5%;bottom:5%}.h{height:2px;left:5.5%;right:5.5%}.diag{height:2px;width:31.5%;transform-origin:left center}
+.p{position:absolute;transform:translate(-50%,-50%);width:8.4%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:#f5e1b8;border:3px solid #382616;box-shadow:0 3px 5px #0008;font-size:clamp(13px,3vw,23px);font-weight:900;cursor:pointer;user-select:none}
+.red{color:#c72525}.blue{color:#1452b4}.sel{outline:5px solid #fff05c}.thinking{color:#ffd166}
+.small{font-size:13px;color:#aeb9ca;line-height:1.6}@media(max-width:850px){.layout{grid-template-columns:1fr}.side{display:none}}
+
+.hero{background:linear-gradient(135deg,#202b3d,#111722);border:1px solid #39485e;border-radius:18px;padding:22px;margin-bottom:12px;text-align:center}
+.hero h2{font-size:clamp(24px,5vw,42px);margin:0 0 8px}.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tile{background:#1b2330;border:1px solid #354258;border-radius:16px;padding:18px;min-height:120px}.tile b{font-size:20px}
+.badge{display:inline-block;background:#ffd166;color:#201900;padding:4px 9px;border-radius:999px;font-weight:900;font-size:12px}
+@media(max-width:700px){.tiles{grid-template-columns:1fr}}
+
+/* 8차 프리미엄 비주얼 */
+#board{border:10px solid #6f421f!important;border-radius:12px!important;
+background:linear-gradient(135deg,#e5b86f,#c98d46)!important;
+box-shadow:inset 0 0 30px #5a321f55,0 14px 35px #0008!important}
+.piece{box-shadow:inset 0 2px 3px #fff8, inset 0 -4px 7px #0005, 0 5px 7px #0007!important;
+border-width:3px!important;text-shadow:0 1px 0 #fff7;transition:transform .12s,filter .12s}
+.piece:hover{transform:translate(-50%,-50%) scale(1.09)!important;filter:brightness(1.08)}
+.lastmove{position:absolute;width:22px;height:22px;border-radius:50%;background:#ffe45caa;box-shadow:0 0 16px #ffe45c;transform:translate(-50%,-50%);pointer-events:none}
+.turnlamp{display:inline-block;width:12px;height:12px;border-radius:50%;background:#5ee27a;box-shadow:0 0 12px #5ee27a;margin-right:6px}
+#matchInfo{max-width:760px;margin:0 auto 10px;background:#121925;border:1px solid #344055;border-radius:14px;padding:10px 14px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-weight:800}
+
+.movehint{position:absolute;width:30px;height:30px;border-radius:50%;background:#58e68a99;
+box-shadow:0 0 12px #58e68a;transform:translate(-50%,-50%);pointer-events:none;z-index:3}
+.capturehint{width:46px;height:46px;background:transparent;border:4px solid #ffdf64aa;box-shadow:0 0 13px #ffdf64}
+
+.kingdanger{outline:5px solid #ff334f!important;box-shadow:0 0 22px #ff334f,inset 0 2px 3px #fff8!important;animation:kingPulse .65s infinite alternate}
+@keyframes kingPulse{from{filter:brightness(1)}to{filter:brightness(1.45)}}
+
+/* ---- 17차 FIX: 선택 메뉴 노란색 강조 ---- */
+.topnav button.menu-active,
+nav button.menu-active{
+  background:#ffd257 !important;
+  color:#172033 !important;
+  border-color:#ffe28a !important;
+  box-shadow:0 0 0 2px rgba(255,210,87,.18),0 5px 16px rgba(0,0,0,.28) !important;
+  font-weight:900 !important;
+}
+
+</style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head><body><header><h1>🏯 온라인 장기왕 WEB</h1><div class=sub>27차 · 온라인 종료·기권·나가기 · Supabase</div></header>
+<nav style="position:sticky;top:0;z-index:20;background:#151d29;border-bottom:1px solid #344055;padding:9px;display:flex;gap:7px;justify-content:center;flex-wrap:wrap">
+<button class="gold" onclick="showPage('game')">⚔️ AI 대국</button>
+<button class="dark" onclick="showPage('online')">🌐 온라인 대국</button>
+<button class="dark" onclick="showPage('ranking')">🏆 랭킹</button>
+<button class="dark" onclick="showPage('shop')">🛍️ 상점</button>
+<button class="dark" onclick="showPage('mypage')">👤 내 정보</button>
+</nav>
+<div id="portal" style="max-width:1100px;margin:14px auto;padding:0 14px"></div>
+
+
+
+
+
+
+
+<div id="serverOverlay" style="display:none;position:fixed;inset:0;background:#050a12ee;z-index:100002;align-items:center;justify-content:center;padding:18px">
+ <div style="width:min(620px,95vw);max-height:90vh;overflow:auto;background:#182334;border:1px solid #52657f;border-radius:24px;padding:24px;box-shadow:0 22px 75px #000">
+  <h2 style="margin-top:0">🔌 온라인 서버 연결</h2>
+  <p style="opacity:.75">Supabase 프로젝트의 주소와 Publishable Key를 넣으면 연결을 시험할 수 있습니다.</p>
+  <label><b>Project URL</b></label>
+  <input id="sbUrl23" placeholder="https://xxxx.supabase.co" style="box-sizing:border-box;width:100%;margin:7px 0 13px;padding:12px;border-radius:10px;border:1px solid #52657f;background:#101722;color:white">
+  <label><b>Publishable Key</b></label>
+  <input id="sbKey23" type="password" placeholder="sb_publishable_..." style="box-sizing:border-box;width:100%;margin:7px 0 13px;padding:12px;border-radius:10px;border:1px solid #52657f;background:#101722;color:white">
+  <div id="serverStatus23" style="padding:12px;border-radius:12px;background:#101722;margin-bottom:12px">⚪ 아직 서버가 연결되지 않았습니다.</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+   <button class="gold" onclick="saveServer23()">💾 저장 + 연결 테스트</button>
+   <button class="dark" onclick="clearServer23()">🗑 설정 지우기</button>
+  </div>
+  <button id="serverClose23" class="dark" style="width:100%;margin-top:9px">닫기</button>
+  
+  <details style="margin-top:12px;background:#101722;border-radius:12px;padding:12px">
+   <summary style="cursor:pointer;font-weight:800">👥 25차 최초 1회: 2인 접속 칸 추가</summary>
+   <p style="font-size:13px;opacity:.8">이미 24차 SQL을 실행했다면 이것만 SQL Editor에서 한 번 실행하세요.</p>
+   <textarea id="sql25" readonly style="box-sizing:border-box;width:100%;height:95px;background:#08101b;color:#dce8f8;border:1px solid #40536c;border-radius:9px;padding:9px;font-size:12px">alter table public.janggi_rooms add column if not exists host_id text;
+alter table public.janggi_rooms add column if not exists guest_id text;</textarea>
+   <button class="dark" style="width:100%;margin-top:7px" onclick="copySql25()">📋 25차 SQL 복사</button>
+  </details>
+<details style="margin-top:12px;background:#101722;border-radius:12px;padding:12px">
+   <summary style="cursor:pointer;font-weight:800">🧱 24차 최초 1회: 대국방 테이블 만들기</summary>
+   <p style="font-size:13px;opacity:.8">Supabase → SQL Editor → New query에서 아래 SQL을 실행하세요.</p>
+   <textarea id="sql24" readonly style="box-sizing:border-box;width:100%;height:190px;background:#08101b;color:#dce8f8;border:1px solid #40536c;border-radius:9px;padding:9px;font-size:12px">create table if not exists public.janggi_rooms (
+ id bigint generated by default as identity primary key,
+ title text not null,
+ host_nickname text not null,
+ guest_nickname text,
+ status text not null default 'waiting',
+ created_at timestamptz not null default now()
+);
+alter table public.janggi_rooms enable row level security;
+create policy "rooms_read" on public.janggi_rooms for select to anon using (true);
+create policy "rooms_insert" on public.janggi_rooms for insert to anon with check (true);
+create policy "rooms_update" on public.janggi_rooms for update to anon using (true) with check (true);</textarea>
+   <button class="dark" style="width:100%;margin-top:7px" onclick="copySql24()">📋 SQL 복사</button>
+  </details>
+<p style="font-size:12px;opacity:.55">※ Secret/Service Role Key는 넣지 마세요. 브라우저에는 공개용 Publishable Key만 사용합니다.</p>
+ </div>
+</div>
+
+<div id="loginOverlay" style="display:none;position:fixed;inset:0;background:#050a12ee;z-index:100001;align-items:center;justify-content:center;padding:18px">
+ <div style="width:min(470px,94vw);background:#182334;border:1px solid #52657f;border-radius:24px;padding:25px;box-shadow:0 22px 75px #000">
+  <div style="text-align:center">
+   <div style="font-size:52px">👑</div>
+   <h2 style="margin:5px 0">온라인 장기왕 시작하기</h2>
+   <p style="opacity:.7">사용할 닉네임을 정해주세요.</p>
+  </div>
+  <label style="font-weight:800">닉네임</label>
+  <input id="nicknameInput" maxlength="12" placeholder="예: 장기왕철이"
+    style="box-sizing:border-box;width:100%;margin:8px 0 12px;padding:14px;border-radius:12px;border:1px solid #52657f;background:#101722;color:white;font-size:17px">
+  <div id="nicknameHint" style="min-height:22px;font-size:13px;opacity:.75">2~12자로 입력하세요.</div>
+  <button id="nicknameSaveBtn" class="gold" style="width:100%;margin-top:10px;padding:13px">닉네임 저장</button>
+  <button id="loginCloseBtn" class="dark" style="width:100%;margin-top:8px;padding:11px">나중에 하기</button>
+  <p style="font-size:12px;opacity:.55;text-align:center;margin-bottom:0">22차에서는 이 기기의 브라우저에 프로필을 저장합니다. 실제 계정 로그인은 서버 연결 후 추가됩니다.</p>
+ </div>
+</div>
+
+<div id="onlineOverlay" style="display:none;position:fixed;inset:0;background:#050a12ee;z-index:99997;align-items:center;justify-content:center;padding:18px">
+ <div style="width:min(900px,97vw);max-height:91vh;overflow:auto;background:#182334;border:1px solid #52657f;border-radius:24px;padding:22px;box-shadow:0 22px 75px #000">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+   <div><h2 style="margin:0">🌐 온라인 대국</h2><small style="opacity:.7"><b data-player-name>장기왕 플레이어</b>님의 온라인 대국 로비</small></div>
+   <div style="display:flex;gap:7px"><button class="dark" onclick="openServer23()">🔌 서버 설정</button><button id="onlineCloseBtn" class="dark">✕ 닫기</button></div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;margin:14px 0;padding:11px 14px;background:#101722;border-radius:14px">
+   <span style="width:10px;height:10px;border-radius:50%;background:#38df83"></span>
+   <b>온라인 서버 로비</b><span style="opacity:.65">· 방장/참가자 2인 입장 확인</span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:11px">
+   <button class="gold" style="min-height:105px;font-size:18px" onclick="quickMatchDemo()">⚡<br><b>빠른 대전</b><br><small>상대 자동 찾기</small></button>
+   <button class="dark" style="min-height:105px;font-size:18px" onclick="createRoom24()">🏠<br><b>방 만들기</b><br><small>내 대국방 생성</small></button>
+   <button class="dark" style="min-height:105px;font-size:18px" onclick="joinRoom24()">🔑<br><b>방 참가하기</b><br><small>방 번호로 참가</small></button>
+   <button class="dark" style="min-height:105px;font-size:18px" onclick="friendMatchDemo()">👥<br><b>친구와 대전</b><br><small>친구 초대 준비</small></button>
+  </div>
+  <div id="onlineStatus" style="margin:14px 0;padding:12px 14px;border-radius:13px;background:#101722">💬 원하는 대국 방식을 선택하세요.</div>
+  <h3 style="margin-bottom:8px">📋 대국방 목록</h3>
+  <div id="roomList"></div>
+  <button class="dark" style="width:100%;margin-top:8px" onclick="loadRooms24()">🔄 서버 대국방 새로고침</button>
+  <div style="margin-top:15px;padding:12px;border-radius:13px;background:#101722;opacity:.8">
+   ℹ️ 26차는 방장과 참가자의 장기판/차례/착수를 서버에서 동기화합니다. 최초 1회 26차 SQL을 실행한 뒤 새 방으로 테스트하세요.
+  </div>
+ </div>
+</div>
+
+<div id="matchRoom25" style="display:none;position:fixed;inset:0;background:#050a12f2;z-index:100002;align-items:center;justify-content:center;padding:18px">
+ <div style="width:min(620px,95vw);background:#182334;border:1px solid #52657f;border-radius:24px;padding:24px;box-shadow:0 22px 75px #000;text-align:center">
+  <div style="font-size:46px">🏯</div><h2 id="matchTitle25" style="margin:6px 0">온라인 대국방</h2>
+  <div id="matchRole25" style="display:inline-block;background:#ffd166;color:#111827;font-weight:900;border-radius:999px;padding:7px 14px;margin:6px"></div>
+  <div id="matchPlayers25" style="margin:14px 0;background:#101722;border-radius:16px;padding:16px;text-align:left"></div>
+  <div id="matchState25" style="margin:12px 0;padding:12px;border-radius:12px;background:#101722">상대방을 확인하는 중...</div>
+  <button id="startOnline26Btn" class="gold" style="display:none;width:100%;margin-bottom:8px" onclick="startOnline26()">⚔️ 2인 온라인 대국 시작</button>
+  <button class="dark" style="width:100%" onclick="leaveMatchRoom25()">← 로비로 돌아가기</button>
+ </div>
+</div>
+
+<div id="profileOverlay" style="display:none;position:fixed;inset:0;background:#050a12e8;z-index:99998;align-items:center;justify-content:center;padding:20px">
+ <div style="width:min(720px,96vw);max-height:88vh;overflow:auto;background:#182334;border:1px solid #52657f;border-radius:24px;padding:24px;box-shadow:0 20px 70px #000">
+  <h2 style="margin-top:0">👤 내 정보</h2>
+  <div id="profileHero" style="text-align:center;background:#101722;border-radius:20px;padding:20px;margin-bottom:14px"></div>
+  <div id="profileStats" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px"></div>
+  <h3>🏅 업적</h3>
+  <div id="achievementList" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px"></div>
+  <div style="text-align:center;margin-top:18px"><button id="profileCloseBtn" class="gold">내 정보 닫기</button></div>
+ </div>
+</div>
+
+<div id="shopOverlay" style="display:none;position:fixed;inset:0;background:#050a12e8;z-index:99998;align-items:center;justify-content:center;padding:20px">
+ <div style="width:min(760px,96vw);max-height:88vh;overflow:auto;background:#182334;border:1px solid #52657f;border-radius:24px;padding:24px;box-shadow:0 20px 70px #000">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+   <h2 style="margin:0">🛍️ 장기왕 프리미엄 상점</h2><b id="shopPoints">0P</b>
+  </div>
+  <p style="opacity:.78">대국으로 모은 포인트로 장기판을 꾸며보세요.</p>
+  <div id="premiumShopGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px"></div>
+  <div style="text-align:center;margin-top:18px"><button class="gold" id="premiumShopCloseBtn">상점 닫기</button></div>
+ </div>
+</div>
+
+<div id="rankOverlay" style="display:none;position:fixed;inset:0;background:#050a12e8;z-index:99998;align-items:center;justify-content:center;padding:20px">
+ <div style="width:min(650px,95vw);max-height:86vh;overflow:auto;background:#182334;border:1px solid #52657f;border-radius:24px;padding:25px;box-shadow:0 20px 70px #000">
+  <h2 style="margin-top:0">🏆 장기왕 랭킹</h2>
+  <div id="myRatingCard" style="background:#101722;border-radius:16px;padding:16px;margin-bottom:14px"></div>
+  <div id="rankList"></div>
+  <div style="text-align:center;margin-top:18px"><button class="gold" onclick="closeRank()">확인</button></div>
+ </div>
+</div>
+<div id="promotionToast" style="display:none;position:fixed;left:50%;top:18%;transform:translateX(-50%);z-index:100000;background:#ffd257;color:#182033;padding:18px 28px;border-radius:18px;font-size:25px;font-weight:900;box-shadow:0 12px 45px #000">🎉 승급!</div>
+
+<div id="resultOverlay" style="display:none;position:fixed;inset:0;background:#050a12dd;z-index:99999;align-items:center;justify-content:center;padding:20px">
+ <div style="width:min(520px,94vw);background:#182334;border:1px solid #53657e;border-radius:24px;padding:28px;text-align:center;box-shadow:0 20px 70px #000">
+  <div id="resultIcon" style="font-size:64px">🏆</div>
+  <h2 id="resultTitle" style="font-size:34px;margin:5px 0">대국 결과</h2>
+  <div id="resultSummary" style="line-height:1.9;font-size:17px;margin:15px 0;background:#101722;border-radius:14px;padding:14px"></div>
+  <button class="gold" onclick="closeResultAndNew()">🔄 한 판 더</button>
+  <button class="dark" onclick="closeResult()">📜 결과 닫기</button>
+  <button class="dark" onclick="showNotation()">기보 보기</button>
+ </div>
+</div>
+
+<div id="startOverlay" style="position:fixed;inset:0;background:#07101beF;z-index:999;display:flex;align-items:center;justify-content:center;padding:20px">
+<div style="max-width:520px;width:100%;background:#172131;border:1px solid #4b5e78;border-radius:24px;padding:28px;text-align:center;box-shadow:0 20px 70px #000">
+<div style="font-size:58px">🏯</div><h1 style="margin:5px 0;font-size:36px">온라인 장기왕</h1>
+<p style="opacity:.8">진형을 고르고 장기왕에 도전하세요!</p>
+<select id="startFormation" style="font-size:18px;padding:12px;border-radius:12px;width:80%;margin:10px">
+<option value="MSMS">마상마상</option><option value="MSSM">마상상마</option><option value="SMMS">상마마상</option><option value="SMSM">상마상마</option>
+</select><br>
+<button class="gold" style="font-size:22px;padding:14px 32px;margin-top:12px" onclick="startMatch()">⚔️ 대국 시작</button>
+</div></div>
+
+<div id="careerPanel" style="max-width:965px;margin:12px auto;background:#182334;border:1px solid #33445c;border-radius:18px;padding:15px">
+ <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">
+  <b style="font-size:19px">📊 나의 대국 통계</b>
+  <span id="careerSummary">전적을 불러오는 중...</span>
+  <button class="dark" onclick="showRecentMatches()">🗂 최근 대국</button>
+ </div>
+</div>
+
+<main id="gamePage"><section class=hero><span class=badge>온라인 장기왕</span><h2>⚔️ AI 대국실</h2><p>대국하고 성장하여 최고의 장기왕에 도전하세요!</p></section><div class=top><button class=gold onclick="reset()">AI와 새 대국</button><button class=dark onclick="flip=!flip;render()">판 뒤집기</button><button class=dark onclick="undo()">한 수 무르기</button><select id="formation" onchange="changeFormation(this.value)" style="border:0;border-radius:10px;padding:10px;font-weight:800">
+<option value="MSMS">마상마상</option>
+<option value="MSSM">마상상마</option>
+<option value="SMMS">상마마상</option>
+<option value="SMSM">상마상마</option>
+</select><select id="difficulty" onchange="setDifficulty(this.value)" style="border:0;border-radius:10px;padding:10px;font-weight:800"><option value="easy">AI 초급 😊</option><option value="normal" selected>AI 중급 ⚔️</option><option value="hard">AI 고급 👑</option></select><button class="dark" onclick="newMatch()">🔄 새 대국</button>
+<button class="dark" onclick="resignMatch()">🏳️ 기권</button>
+<button class="dark" onclick="passTurn()">⏭️ 한수쉼</button>
+<button class="dark" onclick="showScore()">🧮 계가</button>
+<button class="dark" onclick="offerDraw()">🤝 무승부</button>
+<button class="dark" onclick="showNotation()">📜 기보</button>
+<button id="sfxBtn" class=dark onclick="toggleSfx()">🔊 착수음 ON</button><button id="bgmBtn" class=dark onclick="toggleBgm()">🎵 BGM ON</button></div>
+<div id=status></div><div class=layout><aside class="card side"><h3>👑 나의 장기왕</h3>
+<div id="profile" style="font-weight:900;line-height:1.8"></div>
+<div class=small>대국을 하며 경험치와 포인트를 모으세요.<br>기록은 이 브라우저에 자동 저장됩니다.</div>
+<hr style="border-color:#344055"><h3>🏆 오늘의 로컬 랭킹</h3>
+<div id="rank" class=small></div></aside>
+<div class=boardwrap><div id=b></div></div><aside class="card side"><h3>🎯 오늘의 목표</h3>
+<div id="missions" class=small></div>
+<hr style="border-color:#344055"><h3>🎁 대국 보상</h3>
+<div class=small>승리: +100P / +60 EXP<br>패배: +20P / +15 EXP<br>연승할수록 장기왕 등급이 올라갑니다.</div>
+<hr style="border-color:#344055"><h3>🔴 컴퓨터 · 한(漢)</h3>
+<div class=small>초급 AI와 부담 없이 대국하세요.<br>다음 단계에서는 AI 난이도와 정확한 장군 판정을 강화합니다.</div></aside></div></main>
+<script>
+const B=document.querySelector('#b'),ST=document.querySelector('#status');let P=[],turn='blue',sel=null,H=[],flip=false,over=false;
+const N={K:'楚',R:'車',H:'馬',E:'象',A:'士',C:'包',P:'卒',k:'漢',r:'車',h:'馬',e:'象',a:'士',c:'包',p:'兵'};
+function add(t,x,y,c){P.push({t,x,y,c,id:crypto.randomUUID()})}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ---- 14차 FIX2: 멈춤 방지 안정형 AI 스케줄러 ---- */
+let stableAITimer=null;
+function scheduleStableAI(){
+ if(stableAITimer){clearTimeout(stableAITimer);stableAITimer=null;}
+ if(over||turn!=='red')return;
+ aiBusy=false;
+ ST.textContent='🤖 컴퓨터 차례';
+ stableAITimer=setTimeout(()=>{
+   stableAITimer=null;
+   if(over||turn!=='red')return;
+   ai();
+   // 어떤 예외 상황에서도 AI 차례에 영구 정지하지 않게 복구
+   setTimeout(()=>{
+     if(!over&&turn==='red'){
+       aiBusy=false;
+       const fm=fastAIMoves();
+       if(fm.length){
+         const z=fm[Math.floor(Math.random()*fm.length)];
+         move(z.p,z.x,z.y,true);
+       }else{
+         turn='blue'; sel=null; render(); updateMatchInfo(); updateScoreInfo();
+         startTurnClock(); ST.textContent='🔵 초(楚) 차례입니다.';
+       }
+     }
+   },350);
+ },80);
+}
+
+/* ---- AI 즉시 응답 FIX ---- */
+let aiWatchdog=null, aiBusy=false;
+function armAIWatchdog(){
+ if(aiWatchdog)clearTimeout(aiWatchdog);
+ if(turn==='red'&&!over) aiWatchdog=setTimeout(()=>{if(turn==='red'&&!over&&!aiBusy)ai()},1200);
+}
+
+/* ---- 14차: 규칙 상태 표시 / 왕 위험 강조 / 합법수 안정화 ---- */
+function updateRuleInfo(){
+ const e=document.querySelector('#ruleInfo');if(!e)return;
+ if(over){e.textContent='🏁 대국 종료';return}
+ if(kingsFacing()){e.textContent='⚠️ 빅장';return}
+ if(inCheck(turn)){e.textContent='🚨 장군';return}
+ e.textContent='✅ 정상 대국';
+}
+function highlightKingDanger(){
+ document.querySelectorAll('.kingdanger').forEach(x=>x.classList.remove('kingdanger'));
+ if(over||!inCheck(turn))return;
+ let k=kingOf(turn);if(!k)return;
+ let el=[...document.querySelectorAll('.p')].find(e=>e.dataset&&e.dataset.id==String(k.id));
+ if(el)el.classList.add('kingdanger');
+}
+function refreshRuleUI(){updateRuleInfo();setTimeout(highlightKingDanger,0)}
+
+/* ---- 13차: 반복수 감지 / 무승부 / 간이 기보 ---- */
+let positionHistory=[], notation=[];
+function positionKey(){
+ return P.slice().sort((a,b)=>a.id-b.id).map(q=>`${q.c[0]}${q.t}${q.x}${q.y}`).join('|')+'@'+turn;
+}
+function pieceLabel(p){return `${p.c==='blue'?'초':'한'}${N[p.t]||p.t}`}
+function recordNotation(p,fromX,fromY,toX,toY,captured){
+ notation.push(`${notation.length+1}. ${pieceLabel(p)} ${fromX+1}${fromY+1}→${toX+1}${toY+1}${captured?' ×'+N[captured.t]:''}`);
+}
+function showNotation(){
+ alert('📜 현재 대국 기보\n\n'+(notation.length?notation.join('\n'):'아직 착수 기록이 없습니다.'));
+}
+function trackRepetition(){
+ let k=positionKey();positionHistory.push(k);
+ let n=positionHistory.filter(x=>x===k).length;
+ if(n>=3&&!over){
+   over=true;if(turnTimer)clearInterval(turnTimer);
+   ST.textContent='🤝 동일한 국면이 3회 반복되어 무승부 처리되었습니다.';
+   saveHistory('반복수 무승부');render();return true;
+ }
+ return false;
+}
+function offerDraw(){
+ if(over)return;
+ if(confirm('무승부를 제안할까요?\n\n현재 버전에서는 컴퓨터가 현재 기물 점수를 기준으로 판단합니다.')){
+   let gap=Math.abs(sideScore('blue')-sideScore('red'));
+   if(gap<=4){over=true;if(turnTimer)clearInterval(turnTimer);ST.textContent='🤝 컴퓨터가 무승부를 받아들였습니다.';saveHistory('합의 무승부');render();}
+   else {ST.textContent='🤖 컴퓨터가 무승부 제안을 거절했습니다.';ensureAudio();tone(220,.18,.5,'square');}
+ }
+}
+
+/* ---- 12차: 한수쉼 / 빅장 감지 / 기물 점수 / 계가 ---- */
+const JANGGI_VALUE={K:0,R:13,C:7,H:5,E:3,A:3,P:2};
+function sideScore(c){
+ let s=0;P.forEach(q=>{if(q.c===c)s+=JANGGI_VALUE[q.t.toUpperCase()]||0});return s;
+}
+function updateScoreInfo(){
+ let e=document.querySelector('#scoreInfo');if(e)e.textContent=`초 ${sideScore('blue')}점 · 한 ${sideScore('red')}점`;
+}
+function showScore(){
+ let b=sideScore('blue'),r=sideScore('red'),d=b-r;
+ alert(`🧮 현재 기물 점수\n\n초(楚) ${b}점\n한(漢) ${r}점\n\n${d===0?'현재 동점입니다.':d>0?'초가 '+d+'점 앞서 있습니다.':'한이 '+(-d)+'점 앞서 있습니다.'}\n\n※ 12차의 계가는 현재 남은 기물 점수를 보여주는 보조 기능입니다.`);
+}
+function passTurn(){
+ if(over||turn!=='blue')return;
+ if(!confirm('이번 차례를 한수 쉴까요?'))return;
+ moveCount++;notation.push(`${notation.length+1}. 초 한수쉼`);turn='red';render();updateMatchInfo();updateScoreInfo();startTurnClock();refreshRuleUI();if(trackRepetition())return;
+ ST.textContent='⏭️ 초(楚)가 한수 쉬었습니다.';scheduleStableAI();
+}
+function kingsFacing(){
+ let a=kingOf('blue'),b=kingOf('red');if(!a||!b||a.x!==b.x)return false;
+ let y1=Math.min(a.y,b.y)+1,y2=Math.max(a.y,b.y);for(let y=y1;y<y2;y++)if(at(a.x,y))return false;
+ return true;
+}
+function bikjangNotice(){
+ if(kingsFacing()&&!over){ST.textContent='⚠️ 빅장 상태! 두 왕이 같은 세로선에서 마주보고 있습니다.';checkSound();return true}
+ return false;
+}
+
+/* ---- 11차: 초읽기 / 새 대국 / 기권 / 최근 대국 기록 ---- */
+let turnSeconds=30, turnTimer=null;
+let history=JSON.parse(localStorage.getItem('janggiHistory')||'[]');
+
+function saveHistory(result){
+ history.unshift({result, moves:moveCount, formation, difficulty, at:new Date().toLocaleString()});
+ history=history.slice(0,10);
+ localStorage.setItem('janggiHistory',JSON.stringify(history));
+}
+function showHistory(){
+ const msg=history.length?history.map((h,i)=>`${i+1}. ${h.result} · ${h.moves}수 · ${h.at}`).join('\n'):'아직 저장된 대국이 없습니다.';
+ alert('📜 최근 대국 기록\n\n'+msg);
+}
+function newMatch(){careerRecordedForMatch=false;
+ if(!confirm('새 대국을 시작할까요?'))return;
+ const ov=document.querySelector('#startOverlay'); if(ov)ov.style.display='flex';
+ if(turnTimer)clearInterval(turnTimer);
+}
+function resignMatch(){
+ if(over)return;
+ if(!confirm('현재 대국을 기권할까요?'))return;
+ over=true; ST.textContent='🏳️ 기권했습니다. 컴퓨터 승리';
+ saveHistory('기권 패배'); reward(false); render();setTimeout(()=>showResult(false,'기권'),350);
+ if(turnTimer)clearInterval(turnTimer);
+}
+function startTurnClock(){
+ if(turnTimer)clearInterval(turnTimer);
+ turnSeconds=30; paintTurnClock();
+ if(turn==='red')return;
+ turnTimer=setInterval(()=>{
+   if(over){clearInterval(turnTimer);return}
+   turnSeconds--; paintTurnClock();
+   if(turnSeconds<=0){
+     clearInterval(turnTimer);
+     if(turn==='blue'){over=true;ST.textContent='⏰ 시간 초과! 컴퓨터 승리';saveHistory('시간패');reward(false);render();setTimeout(()=>showResult(false,'시간 초과'),350);}
+   }
+ },1000);
+}
+function paintTurnClock(){
+ let e=document.querySelector('#turnInfo');if(!e)return;
+ e.textContent=(turn==='blue'?'초(楚)':'한(漢)')+' 차례 · ⏱ '+turnSeconds+'초';
+}
+
+/* ---- 10차 FIX: 진형 선택 / 대국 시작 ---- */
+let formation='MSMS';
+function changeFormation(v){
+ formation=v;
+ const s=document.querySelector('#startFormation');
+ if(s)s.value=v;
+}
+function formationTypes(v){return v.split('').map(x=>x==='M'?'H':'E')}
+function applyFormation(){
+ const f=formationTypes(formation);
+ const blue=P.filter(q=>q.c==='blue'&&(q.t.toUpperCase()==='H'||q.t.toUpperCase()==='E')&&q.y===9).sort((a,b)=>a.x-b.x);
+ const red=P.filter(q=>q.c==='red'&&(q.t.toUpperCase()==='H'||q.t.toUpperCase()==='E')&&q.y===0).sort((a,b)=>a.x-b.x);
+ blue.forEach((q,i)=>q.t=f[i]||q.t);
+ red.forEach((q,i)=>q.t=f[3-i]||q.t);
+}
+function startMatch(){careerRecordedForMatch=false;
+ const s=document.querySelector('#startFormation');
+ formation=s?s.value:'MSMS';
+ const f=document.querySelector('#formation'); if(f)f.value=formation;
+ const ov=document.querySelector('#startOverlay'); if(ov)ov.style.display='none';
+ reset();
+ positionHistory=[];notation=[];
+ applyFormation();
+ render();
+ startClock();
+ updateMatchInfo();
+ skinStyle();applyPremiumBoard();
+ ensureAudio();
+ [392,523,659].forEach((n,i)=>setTimeout(()=>tone(n,.25,.72,'triangle'),i*120));
+ positionHistory=[positionKey()];ST.textContent='⚔️ 대국 시작! 초(楚) 차례입니다.';updateScoreInfo();startTurnClock();refreshRuleUI();
+}
+
+/* ---- 8차: 마지막 착수 / 대국수 / 타이머 / 프리미엄 표시 ---- */
+let moveCount=0,lastMove=null,matchStart=Date.now(),timerHandle=null;
+function updateMatchInfo(){
+ let ti=document.querySelector('#turnInfo'),mi=document.querySelector('#moveInfo');
+ if(ti)ti.textContent=(turn==='blue'?'초(楚)':'한(漢)')+' 차례';
+ if(mi)mi.textContent='착수 '+moveCount+'수';
+}
+function drawLastMove(){
+ document.querySelectorAll('.lastmove').forEach(e=>e.remove());
+ if(!lastMove)return;let b=document.querySelector('#b');if(!b)return;
+ let d=document.createElement('div');d.className='lastmove';
+ d.style.left=(lastMove.x/8*100)+'%';d.style.top=(lastMove.y/9*100)+'%';b.appendChild(d);
+}
+function startClock(){
+ if(timerHandle)clearInterval(timerHandle);matchStart=Date.now();
+ timerHandle=setInterval(()=>{let e=document.querySelector('#timeInfo');if(!e)return;let s=Math.floor((Date.now()-matchStart)/1000),m=Math.floor(s/60);e.textContent='대국 '+String(m).padStart(2,'0')+':'+String(s%60).padStart(2,'0')},1000)
+}
+
+/* ---- 7차: 승리/장군/레벨업 사운드 + 장기판 스킨 ---- */
+let appliedSkin=localStorage.getItem('janggiSkin')||'기본 나무판';
+function fanfare(){
+ ensureAudio(); [523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,.32,.8,'triangle'),i*115));
+ setTimeout(()=>tone(1319,.7,.95,'sine'),460);
+}
+function loseSound(){ensureAudio();[330,247,196,147].forEach((f,i)=>setTimeout(()=>tone(f,.35,.65,'sawtooth'),i*150));}
+function checkSound(){ensureAudio();tone(880,.11,.9,'square');setTimeout(()=>tone(1175,.16,.9,'square'),110);}
+function levelSound(){ensureAudio();[659,784,988,1319].forEach((f,i)=>setTimeout(()=>tone(f,.2,.75,'sine'),i*90));}
+function skinStyle(){
+ const b=document.querySelector('#b'); if(!b)return;
+ if(appliedSkin.includes('달빛')){b.style.background='linear-gradient(135deg,#17233b,#2f4165)';b.style.boxShadow='0 0 35px #8db7ff66'}
+ else if(appliedSkin.includes('황금')){b.style.background='linear-gradient(135deg,#8a5d12,#e4b94f,#6f4607)';b.style.boxShadow='0 0 38px #ffd35c88'}
+ else if(appliedSkin.includes('원목')){b.style.background='linear-gradient(135deg,#c99352,#8a552d)';b.style.boxShadow='0 0 24px #0008'}
+ else{b.style.background='';b.style.boxShadow=''}
+}
+function cycleSkin(){
+ let choices=['기본 나무판',...owned.filter(x=>x.includes('장기판')||x.includes('세트'))];
+ let i=(choices.indexOf(appliedSkin)+1)%choices.length;appliedSkin=choices[i];
+ localStorage.setItem('janggiSkin',appliedSkin);skinStyle();alert('🎨 '+appliedSkin+' 적용!');
+}
+
+/* ---- 6차: 포털 화면 / 랭킹 / 상점 / 내 정보 ---- */
+let owned=JSON.parse(localStorage.getItem('janggiOwned')||'["기본 나무판"]');
+function showPage(page){
+ const portal=document.querySelector('#portal'), game=document.querySelector('#gamePage');
+ if(page==='game'){portal.innerHTML='';game.style.display='block';setTimeout(skinStyle,30);window.scrollTo({top:0,behavior:'smooth'});return}
+ game.style.display='none';
+ if(page==='online') portal.innerHTML=`<section class=hero><span class=badge>25차 ONLINE</span><h2>🌐 실시간 온라인 대국</h2><p>서버에 연결한 뒤 실제 대국방을 만들거나 참가할 수 있습니다.</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class=gold onclick="openOnlineLobby()">🚪 온라인 대국방 들어가기</button><button class=dark onclick="openServer23()">🔌 서버 설정</button></div></section><div class=tiles><div class=tile><b>⚡ 빠른 매칭</b><p>비슷한 실력의 상대와 자동 매칭</p></div><div class=tile><b>👥 친구 대국</b><p>방 번호로 지인과 바로 대국</p></div><div class=tile><b>👁️ 관전실</b><p>인기 대국을 함께 관전</p></div></div>`;
+ if(page==='ranking') portal.innerHTML=`<section class=hero><h2>🏆 장기왕 랭킹</h2><p>시즌 경쟁으로 장기왕에 도전하세요.</p></section><div class=card style="font-size:18px;line-height:2.2">🥇 1위　천하장기왕　2450<br>🥈 2위　초나라명인　2310<br>🥉 3위　한수고수　2195<br>⭐ 나　${stats.w*100+stats.best*35+level()*20}점</div>`;
+ if(page==='shop') portal.innerHTML=`<section class=hero><h2>🛍️ 장기왕 상점</h2><p>대국 포인트로 장기판을 꾸며보세요. 현재 보유 ${stats.point}P</p></section><div class=tiles>
+ ${shopTile('🌳','고급 원목 장기판',300)}${shopTile('🌙','달빛 궁궐 장기판',600)}${shopTile('👑','황금 장기왕 세트',1200)}</div>`;
+ if(page==='mypage') portal.innerHTML=`<section class=hero><h2>👤 나의 장기왕</h2><p style="font-size:20px">Lv.${level()} <b>${title()}</b></p><p>${stats.w}승 ${stats.l}패 · 최고 ${stats.best}연승 · ${stats.point}P</p></section><div class=tiles><div class=tile><b>🎖️ 보유 장식</b><p>${owned.join('<br>')}</p><button class=gold onclick="cycleSkin()">🎨 보유 장기판 적용</button></div><div class=tile><b>📈 성장</b><p>EXP ${stats.exp%150}/150<br>다음 레벨까지 ${150-stats.exp%150} EXP</p></div><div class=tile><b>🔥 기록</b><p>현재 ${stats.streak}연승<br>총 ${stats.games}대국</p><button class=dark onclick="showHistory()">📜 최근 대국</button></div></div>`;
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+function shopTile(icon,name,price){let have=owned.includes(name);return `<div class=tile><b>${icon} ${name}</b><p>${price}P</p><button class="${have?'dark':'gold'}" onclick="buy('${name}',${price})">${have?'보유 중':'구매'}</button></div>`}
+function buy(name,price){if(owned.includes(name))return;if(stats.point<price){alert('포인트가 부족합니다. AI 대국으로 포인트를 모아보세요!');return}stats.point-=price;owned.push(name);localStorage.setItem('janggiOwned',JSON.stringify(owned));saveStats();showPage('shop');alert('🎁 '+name+' 획득!')}
+
+/* ---- 5차: AI 난이도 / 장군 판정 / 궁성 대각선 ---- */
+let difficulty='normal';
+function setDifficulty(v){difficulty=v;ST.textContent='🤖 AI 난이도: '+({easy:'초급',normal:'중급',hard:'고급'}[v]);}
+function palaceDiag(x1,y1,x2,y2,c){
+ if(!palace(c,x1,y1)||!palace(c,x2,y2)) return false;
+ let cx=4,cy=c=='blue'?8:1;
+ return (x1==cx&&y1==cy&&Math.abs(x2-x1)==1&&Math.abs(y2-y1)==1) ||
+        (x2==cx&&y2==cy&&Math.abs(x2-x1)==1&&Math.abs(y2-y1)==1);
+}
+function kingOf(c){return P.find(q=>q.c==c&&q.t.toUpperCase()=='K')}
+function pseudoAttack(p,x,y){
+ let save=over;over=false;let z=legal(p,x,y);over=save;return z;
+}
+function inCheck(c){
+ let k=kingOf(c); if(!k)return false;
+ return P.some(q=>q.c!=c&&pseudoAttack(q,k.x,k.y));
+}
+function snapshotMove(p,x,y){
+ let ox=p.x,oy=p.y,d=at(x,y),di=d?P.indexOf(d):-1;
+ if(d)P.splice(di,1);
+ p.x=x;p.y=y;
+ return ()=>{
+   p.x=ox;p.y=oy;
+   if(d)P.splice(di,0,d);
+ };
+}
+function safeLegal(p,x,y){
+ if(!legal(p,x,y))return false;
+ let back=snapshotMove(p,x,y),bad=inCheck(p.c);back();return !bad;
+}
+function checkText(){
+ if(over)return;
+ if(inCheck(turn)){ST.textContent=(turn=='blue'?'⚠️ 초(楚)':'⚠️ 한(漢)')+' 장군! 왕을 피해야 합니다.';checkSound();}
+}
+
+/* ---- 4차: 로컬 성장/전적 시스템 ---- */
+let stats=JSON.parse(localStorage.getItem('janggiKingStats')||'{"w":0,"l":0,"streak":0,"best":0,"point":0,"exp":0,"games":0}');
+let rewarded=false;
+function level(){return Math.floor(stats.exp/150)+1}
+function title(){let lv=level();return lv>=10?'장기왕':lv>=7?'명인':lv>=4?'고수':lv>=2?'도전자':'새내기'}
+function saveStats(){localStorage.setItem('janggiKingStats',JSON.stringify(stats));drawStats()}
+function drawStats(){
+ let p=document.querySelector('#profile'),r=document.querySelector('#rank'),m=document.querySelector('#missions'); if(!p)return;
+ p.innerHTML=`Lv.${level()} ${title()}<br>💰 ${stats.point}P　🔥 ${stats.streak}연승<br>전적 ${stats.w}승 ${stats.l}패 · 최고 ${stats.best}연승<br>EXP ${stats.exp%150}/150`;
+ let score=stats.w*100+stats.best*35+level()*20;
+ r.innerHTML=`1위 👑 장기왕 도전자 — ${score}점<br>2위 🤖 한나라 AI — ${Math.max(80,score-35)}점<br>3위 🌱 연습생 — ${Math.max(30,score-90)}점`;
+ m.innerHTML=`${stats.games<1?'⬜':'✅'} 오늘 대국 1판<br>${stats.w<1?'⬜':'✅'} 첫 승리 달성<br>${stats.streak<2?'⬜':'✅'} 2연승 도전`;
+}
+function reward(win){
+ if(rewarded)return; rewarded=true;let oldLv=level();stats.games++;
+ if(win){stats.w++;stats.streak++;stats.best=Math.max(stats.best,stats.streak);stats.point+=100;stats.exp+=60}
+ else{stats.l++;stats.streak=0;stats.point+=20;stats.exp+=15}
+ saveStats(); if(win)fanfare();else loseSound(); if(level()>oldLv){setTimeout(levelSound,700);setTimeout(()=>alert('⭐ LEVEL UP! Lv.'+level()+' '+title()),950)}
+ setTimeout(()=>alert(win?'🎉 승리 보상! +100P / +60 EXP':'대국 보상 +20P / +15 EXP'),100);
+}
+
+/* ---- WebAudio: 외부 음원 파일 없이 HTML 하나에서 동작 ---- */
+let AC=null,sfxOn=true,bgmOn=true,bgmTimer=null,bgmStep=0;
+function audioReady(){
+  if(!AC) AC=new (window.AudioContext||window.webkitAudioContext)();
+  if(AC.state==='suspended') AC.resume();
+  if(bgmOn&&!bgmTimer) startBgm();
+}
+document.addEventListener('pointerdown',audioReady,{once:true});
+function tone(freq,dur,vol,type='sine',when=0){
+  if(!AC)return;
+  const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime+when;
+  o.type=type;o.frequency.setValueAtTime(freq,t);
+  g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.015);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+dur+.03);
+}
+function moveSound(capture=false){
+  if(!sfxOn)return;audioReady();
+  // 나무 장기알이 장기판에 '탁' 놓이는 느낌의 짧은 합성음
+  tone(capture?165:205,.12,.95,'triangle');
+  tone(capture?95:125,.10,.72,'square',.018);
+  if(capture){tone(285,.13,.68,'triangle',.055);tone(72,.16,.78,'square',.02);}
+}
+function startBgm(){
+  if(!AC||!bgmOn||bgmTimer)return;
+  const seq=[261.63,329.63,392,329.63,293.66,349.23,440,349.23,246.94,329.63,392,329.63,220,293.66,349.23,293.66];
+  const play=()=>{if(!bgmOn||!AC)return;let f=seq[bgmStep++%seq.length];tone(f,.9,.38,'sine');tone(f/2,1.15,.22,'sine',.04)};
+  play();bgmTimer=setInterval(play,1150);
+}
+function stopBgm(){if(bgmTimer){clearInterval(bgmTimer);bgmTimer=null}}
+function toggleSfx(){sfxOn=!sfxOn;document.querySelector('#sfxBtn').textContent=sfxOn?'🔊 착수음 ON':'🔇 착수음 OFF';if(sfxOn){audioReady();moveSound(false)}}
+function toggleBgm(){bgmOn=!bgmOn;document.querySelector('#bgmBtn').textContent=bgmOn?'🎵 BGM ON':'🎵 BGM OFF';audioReady();bgmOn?startBgm():stopBgm()}
+
+function reset(){rewarded=false;moveCount=0;lastMove=null;P=[];[['R',0,9],['H',1,9],['E',2,9],['A',3,9],['A',5,9],['E',6,9],['H',7,9],['R',8,9],['K',4,8],['C',1,7],['C',7,7],['P',0,6],['P',2,6],['P',4,6],['P',6,6],['P',8,6]].forEach(x=>add(...x,'blue'));
+[['r',0,0],['h',1,0],['e',2,0],['a',3,0],['a',5,0],['e',6,0],['h',7,0],['r',8,0],['k',4,1],['c',1,2],['c',7,2],['p',0,3],['p',2,3],['p',4,3],['p',6,3],['p',8,3]].forEach(x=>add(...x,'red'));turn='blue';sel=null;H=[];over=false;render()}
+const at=(x,y)=>P.find(q=>q.x==x&&q.y==y),friend=(p,q)=>q&&p.c==q.c;
+function clear(p,x,y){let sx=Math.sign(x-p.x),sy=Math.sign(y-p.y),cx=p.x+sx,cy=p.y+sy;while(cx!=x||cy!=y){if(at(cx,cy))return false;cx+=sx;cy+=sy}return true}
+function palace(c,x,y){return x>=3&&x<=5&&(c=='blue'?y>=7&&y<=9:y>=0&&y<=2)}
+function palaceCenter(c){return {x:4,y:c=='blue'?8:1}}
+function onPalaceDiag(c,x,y){let m=palaceCenter(c);return palace(c,x,y)&&Math.abs(x-m.x)==Math.abs(y-m.y)}
+function palaceDiagLine(c,x1,y1,x2,y2){
+ if(!palace(c,x1,y1)||!palace(c,x2,y2)||Math.abs(x2-x1)!=Math.abs(y2-y1))return false;
+ let m=palaceCenter(c); return (x1==m.x&&y1==m.y)||(x2==m.x&&y2==m.y)||
+ ((x1-m.x)*(y1-m.y)==(x2-m.x)*(y2-m.y));
+}
+function diagClear(p,x,y){let sx=Math.sign(x-p.x),sy=Math.sign(y-p.y),cx=p.x+sx,cy=p.y+sy;
+ while(cx!=x||cy!=y){if(at(cx,cy))return false;cx+=sx;cy+=sy}return true}
+function legal(p,x,y){if(over||x<0||x>8||y<0||y>9||friend(p,at(x,y))||(x==p.x&&y==p.y))return false;let dx=x-p.x,dy=y-p.y,ax=Math.abs(dx),ay=Math.abs(dy),t=p.t.toUpperCase();
+let pd=palaceDiagLine(p.c,p.x,p.y,x,y);
+
+if(t=='R')return ((dx==0||dy==0)&&clear(p,x,y)) || (pd&&diagClear(p,x,y));
+if(t=='H'){if(!((ax==1&&ay==2)||(ax==2&&ay==1)))return false;return !at(p.x+(ax==2?Math.sign(dx):0),p.y+(ay==2?Math.sign(dy):0))}
+if(t=='E'){if(!((ax==2&&ay==3)||(ax==3&&ay==2)))return false;let sx=Math.sign(dx),sy=Math.sign(dy),q1=[p.x+(ax==3?sx:0),p.y+(ay==3?sy:0)],q2=[p.x+(ax==3?2*sx:sx),p.y+(ay==3?2*sy:sy)];return !at(...q1)&&!at(...q2)}
+if(t=='C'){if(!((dx==0||dy==0)||pd))return false;let sx=Math.sign(dx),sy=Math.sign(dy),cx=p.x+sx,cy=p.y+sy,n=0;
+while(cx!=x||cy!=y){let q=at(cx,cy);if(q){if(q.t.toUpperCase()=='C')return false;n++}cx+=sx;cy+=sy}
+let d=at(x,y);return n==1&&(!d||d.t.toUpperCase()!='C')}
+if(t=='P'){let f=p.c=='blue'?-1:1;return(dy==f&&ax<=1)||(dy==0&&ax==1)||(pd&&dy==f)}
+if(t=='K'||t=='A')return palace(p.c,x,y)&&((ax+ay==1)||pd);return false}
+function lines(){B.innerHTML='';for(let x=0;x<9;x++){let e=document.createElement('i');e.className='l v';e.style.left=(5.5+x*11.125)+'%';B.append(e)}for(let y=0;y<10;y++){let e=document.createElement('i');e.className='l h';e.style.top=(5+y*10)+'%';B.append(e)}}
+function render(){lines();P.forEach(p=>{let e=document.createElement('div'),x=flip?8-p.x:p.x,y=flip?9-p.y:p.y;e.className='p '+p.c+(sel?.id==p.id?' sel':'');e.dataset.id=p.id;e.style.left=(5.5+x*11.125)+'%';e.style.top=(5+y*10)+'%';e.textContent=N[p.t];e.onclick=ev=>{ev.stopPropagation();pick(p)};B.append(e)});
+if(sel&&turn=='blue'&&!over){for(let yy=0;yy<10;yy++)for(let xx=0;xx<9;xx++)if(safeLegal(sel,xx,yy)){let h=document.createElement('div'),hx=flip?8-xx:xx,hy=flip?9-yy:yy;h.className='movehint'+(at(xx,yy)?' capturehint':'');h.style.left=(5.5+hx*11.125)+'%';h.style.top=(5+hy*10)+'%';h.style.pointerEvents='auto';h.onclick=(ev)=>{ev.stopPropagation();let chosen=sel;if(chosen&&safeLegal(chosen,xx,yy))move(chosen,xx,yy)};B.append(h)}}
+ST.textContent=over?'대국 종료':turn=='blue'?'🔵 내 차례':'🤖 컴퓨터가 생각 중...'}
+function pick(p){if(turn!='blue'||over)return;if(sel&&p.c=='red'&&safeLegal(sel,p.x,p.y)){move(sel,p.x,p.y);return}if(p.c=='blue'){sel=p;render()}}
+B.onclick=e=>{if(turn!='blue'||!sel||over)return;let r=B.getBoundingClientRect(),x=Math.round(((e.clientX-r.left)/r.width*100-5.5)/11.125),y=Math.round(((e.clientY-r.top)/r.height*100-5)/10);if(flip){x=8-x;y=9-y}if(safeLegal(sel,x,y))move(sel,x,y)}
+function move(p,x,y,noAI=false){let fx=p.x,fy=p.y,capBefore=at(x,y);H.push(JSON.stringify(P));let d=at(x,y),king=d&&d.t.toUpperCase()=='K';moveSound(!!d);if(d)P=P.filter(q=>q.id!=d.id);p=P.find(q=>q.id==p.id);p.x=x;p.y=y;sel=null;if(king){
+ over=true;
+ if(turnTimer)clearInterval(turnTimer);
+ if(stableAITimer)clearTimeout(stableAITimer);
+ if(aiWatchdog)clearTimeout(aiWatchdog);
+ aiBusy=false;
+ sel=null;
+ render();drawLastMove();updateMatchInfo();updateScoreInfo();updateRuleInfo();
+ let win=p.c=='blue';
+ ST.textContent=win?'🎉 왕을 잡았습니다! 초(楚) 승리!':'😢 왕이 잡혔습니다. 컴퓨터 승리';
+ saveHistory(win?'왕 포획 승리':'왕 포획 패배');
+ showResult(win,'왕 포획');
+ setTimeout(()=>reward(win),120);
+ return;
+}recordNotation(p,fx,fy,x,y,capBefore);turn=turn=='blue'?'red':'blue';
+sel=null;
+if(turn==='blue')aiBusy=false;
+render();drawLastMove();updateMatchInfo();updateScoreInfo();startTurnClock();if(trackRepetition())return;
+if(turn==='blue'){
+ bikjangNotice();checkText();
+ if(!over && !inCheck('blue')) ST.textContent='🔵 초(楚) 차례입니다. 말을 선택하세요.';
+}else if(!noAI){scheduleStableAI()}}
+function moves(c){let a=[];P.filter(p=>p.c==c).forEach(p=>{for(let y=0;y<10;y++)for(let x=0;x<9;x++)if(safeLegal(p,x,y))a.push({p,x,y,cap:at(x,y)})});return a}
+
+/* ---- FIX4: 끊김 없는 초고속 AI ---- */
+function fastAIMoves(){
+ let a=[];
+ for(let p of P){
+   if(p.c!=='red')continue;
+   for(let y=0;y<10;y++)for(let x=0;x<9;x++){
+     let d=at(x,y);
+     if(d&&d.c==='red')continue;
+     try{if(legal(p,x,y))a.push({p,x,y,cap:d});}catch(e){}
+   }
+ }
+ return a;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* ---- 25차: 두 사용자 입장/역할 확인 ---- */
+const CLIENT25_KEY='janggiKingClient25';
+let room25Id=null, room25Role=null, room25Timer=null;
+function clientId25(){let v=localStorage.getItem(CLIENT25_KEY);if(!v){v='c_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,10);localStorage.setItem(CLIENT25_KEY,v)}return v}
+function openMatchRoom25(r,role){room25Id=r.id;room25Role=role;document.getElementById('matchRoom25').style.display='flex';renderMatch25(r);clearInterval(room25Timer);room25Timer=setInterval(refreshMatch25,1500);refreshMatch25()}
+function renderMatch25(r){
+ document.getElementById('matchTitle25').textContent='🏯 #'+r.id+' '+(r.title||'온라인 대국방');
+ document.getElementById('matchRole25').textContent=room25Role==='host'?'👑 나는 방장 · 초(楚)':'⚔️ 나는 참가자 · 한(漢)';
+ document.getElementById('matchPlayers25').innerHTML=`<div style="display:flex;justify-content:space-between;padding:8px"><b>🔵 초 · 방장</b><span>${esc24(r.host_nickname||'')}</span></div><div style="display:flex;justify-content:space-between;padding:8px;border-top:1px solid #2f4159"><b>🔴 한 · 참가자</b><span>${r.guest_nickname?esc24(r.guest_nickname):'⏳ 상대 기다리는 중'}</span></div>`;
+ document.getElementById('matchState25').innerHTML=r.guest_nickname?'🟢 <b>2명 모두 입장했습니다!</b><br><small>다음 26차에서 두 화면의 장기판과 착수를 실시간으로 연결합니다.</small>':'🟡 상대방이 참가할 때까지 기다리는 중...';
+}
+async function refreshMatch25(){if(!room25Id||!sb23)return;const {data,error}=await sb23.from('janggi_rooms').select('id,title,host_nickname,guest_nickname,status,host_id,guest_id').eq('id',room25Id).single();if(!error&&data)renderMatch25(data)}
+function leaveMatchRoom25(){clearInterval(room25Timer);room25Timer=null;room25Id=null;document.getElementById('matchRoom25').style.display='none';loadRooms24()}
+
+/* ---- 24차: Supabase 서버 대국방 ---- */
+async function ensureServer24(){
+ if(sb23)return true;
+ return await connectServer23(false);
+}
+async function createRoom24(){
+ if(!await ensureServer24()){onlineMsg('🔴 먼저 🔌 서버 설정에서 연결을 확인해주세요.');return}
+ const p=loadProfile22(), title=prompt('방 제목을 입력하세요.','즐겁게 한판');
+ if(!title)return;
+ onlineMsg('🔄 서버에 대국방을 만드는 중...');
+ const room={title:title.slice(0,30),host_nickname:p.nickname||'장기왕 플레이어',guest_nickname:null,status:'waiting',host_id:clientId25(),guest_id:null};
+ const {data,error}=await sb23.from('janggi_rooms').insert(room).select().single();
+ if(error){roomError24(error);return}
+ onlineMsg(`🏠 <b>${esc24(data.title)}</b> 방 생성 성공! 방 번호: <b>${data.id}</b>`);
+ await loadRooms24();
+ openMatchRoom25(data,'host');
+}
+async function joinRoom24(){
+ const no=prompt('참가할 서버 방 번호를 입력하세요.','');
+ if(no)await joinServerRoom24(no.trim());
+}
+async function joinServerRoom24(id){
+ if(!await ensureServer24()){onlineMsg('🔴 먼저 서버 연결을 확인해주세요.');return}
+ const p=loadProfile22();
+ onlineMsg(`🔄 ${esc24(id)}번 방에 참가하는 중...`);
+ const {data,error}=await sb23.from('janggi_rooms')
+   .update({guest_nickname:p.nickname||'장기왕 플레이어',guest_id:clientId25(),status:'playing'})
+   .eq('id',id).eq('status','waiting').neq('host_id',clientId25()).select().single();
+ if(error||!data){onlineMsg('⚠️ 참가할 수 없는 방이거나 이미 상대가 들어왔습니다.');return}
+ onlineMsg(`🎮 <b>${esc24(data.title)}</b> 참가 성공! 방장과 참가자가 연결되었습니다.`);
+ await loadRooms24();
+ openMatchRoom25(data,'guest');
+}
+async function loadRooms24(){
+ const e=document.getElementById('roomList');if(!e)return;
+ if(!await ensureServer24()){renderDemoRooms();onlineMsg('🟡 서버 미연결: 예시 방을 표시합니다.');return}
+ e.innerHTML='<div style="padding:14px;opacity:.7">🔄 서버 대국방 불러오는 중...</div>';
+ const {data,error}=await sb23.from('janggi_rooms').select('id,title,host_nickname,guest_nickname,status,created_at,host_id,guest_id')
+   .order('created_at',{ascending:false}).limit(20);
+ if(error){roomError24(error);return}
+ if(!data||!data.length){e.innerHTML='<div style="padding:18px;background:#101722;border-radius:12px">📭 아직 열린 대국방이 없습니다. <b>방 만들기</b>로 첫 방을 만들어보세요.</div>';return}
+ e.innerHTML=data.map(r=>`<div style="display:grid;grid-template-columns:70px 1fr 1fr 85px 90px;gap:7px;align-items:center;background:#101722;border:1px solid #2f4159;border-radius:12px;padding:10px;margin:7px 0">
+ <b>#${esc24(r.id)}</b><span>${esc24(r.title)}</span><small>👑 ${esc24(r.host_nickname)}</small>
+ <span>${r.status==='waiting'?'🟢 대기':'⚔️ 대국중'}</span>
+ ${r.status==='waiting'?`<button class="dark" onclick="joinServerRoom24('${String(r.id).replace(/'/g,"")}')">참가</button>`:'<span style="opacity:.55">입장불가</span>'}</div>`).join('');
+}
+function esc24(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function roomError24(error){
+ const m=String(error&&error.message||error||'알 수 없는 오류');
+ if(m.includes('janggi_rooms')||m.includes('schema cache'))
+   onlineMsg('🧱 서버 연결은 정상입니다. 이제 Supabase에 <b>janggi_rooms</b> 테이블을 한 번 만들어야 합니다. 아래의 24차 SQL 설정 안내를 따라주세요.');
+ else onlineMsg('🔴 서버 오류: '+esc24(m));
+}
+
+/* ---- 23차: 실제 서버 연결 준비 ---- */
+const SERVER23_KEY='janggiKingServer23';
+let sb23=null;
+function getServer23(){try{return JSON.parse(localStorage.getItem(SERVER23_KEY))||{url:'',key:''}}catch(e){return {url:'',key:''}}}
+function openServer23(){
+ const s=getServer23();document.getElementById('sbUrl23').value=s.url||'';document.getElementById('sbKey23').value=s.key||'';
+ document.getElementById('serverOverlay').style.display='flex';refreshServerStatus23();
+}
+function closeServer23(){document.getElementById('serverOverlay').style.display='none'}
+function clearServer23(){localStorage.removeItem(SERVER23_KEY);sb23=null;document.getElementById('sbUrl23').value='';document.getElementById('sbKey23').value='';refreshServerStatus23()}
+async function saveServer23(){
+ const url=document.getElementById('sbUrl23').value.trim(),key=document.getElementById('sbKey23').value.trim();
+ const st=document.getElementById('serverStatus23');
+ if(!/^https:\/\/.+\.supabase\.co\/?$/.test(url)||key.length<20){st.textContent='⚠️ Project URL 또는 Publishable Key를 확인해주세요.';return}
+ localStorage.setItem(SERVER23_KEY,JSON.stringify({url,key}));
+ st.textContent='🔄 서버 연결을 확인하는 중...';
+ await connectServer23(true);
+}
+async function connectServer23(show){
+ const s=getServer23(),st=document.getElementById('serverStatus23');
+ if(!s.url||!s.key){if(st)st.textContent='⚪ 아직 서버가 연결되지 않았습니다.';return false}
+ try{
+   if(!window.supabase||!window.supabase.createClient)throw new Error('Supabase 라이브러리를 불러오지 못했습니다.');
+   sb23=window.supabase.createClient(s.url,s.key,{auth:{persistSession:true}});
+   const r=await fetch(s.url+'/auth/v1/settings',{headers:{apikey:s.key}});
+   if(!r.ok)throw new Error('연결 응답 '+r.status);
+   if(st)st.textContent='🟢 서버 연결 성공! 다음 단계에서 온라인 방/대국 데이터를 연결할 수 있습니다.';
+   const os=document.getElementById('onlineStatus');if(os)os.innerHTML='🟢 <b>온라인 서버 연결됨</b> · 실시간 대국 기능 준비 중';
+   return true;
+ }catch(e){
+   if(st)st.textContent='🔴 연결 실패: '+e.message;
+   return false;
+ }
+}
+function refreshServerStatus23(){
+ const s=getServer23(),st=document.getElementById('serverStatus23');
+ if(st)st.textContent=s.url?'🟡 설정이 저장되어 있습니다. 연결 테스트를 눌러 확인하세요.':'⚪ 아직 서버가 연결되지 않았습니다.';
+}
+
+/* ---- 22차: 닉네임 / 로컬 프로필 ---- */
+const PROFILE22_KEY='janggiKingProfile22';
+function loadProfile22(){
+ try{return JSON.parse(localStorage.getItem(PROFILE22_KEY))||{nickname:'장기왕 플레이어'}}
+ catch(e){return {nickname:'장기왕 플레이어'}}
+}
+function saveNickname22(){
+ const i=document.getElementById('nicknameInput'),h=document.getElementById('nicknameHint');
+ const n=(i.value||'').trim();
+ if(n.length<2||n.length>12){h.textContent='⚠️ 닉네임은 2~12자로 입력해주세요.';h.style.color='#ffd257';return}
+ if(/[<>]/.test(n)){h.textContent='⚠️ 사용할 수 없는 문자가 있습니다.';h.style.color='#ffd257';return}
+ localStorage.setItem(PROFILE22_KEY,JSON.stringify({nickname:n}));
+ h.textContent='✅ 저장되었습니다!';h.style.color='#57e891';
+ updateNickname22();setTimeout(closeLogin22,350);
+}
+function updateNickname22(){
+ const p=loadProfile22();
+ document.querySelectorAll('[data-player-name]').forEach(e=>e.textContent=p.nickname);
+}
+function openLogin22(){
+ const p=loadProfile22(),i=document.getElementById('nicknameInput');
+ if(i)i.value=p.nickname==='장기왕 플레이어'?'':p.nickname;
+ document.getElementById('loginOverlay').style.display='flex';
+ setTimeout(()=>i&&i.focus(),50);
+}
+function closeLogin22(){const o=document.getElementById('loginOverlay');if(o)o.style.display='none'}
+
+/* ---- 21차: 온라인 대국 로비 ---- */
+const DEMO_ROOMS=[
+ ['001','즐겁게 한판','10분 · 초읽기 5초','1 / 2'],
+ ['002','초보 환영','15분 · 초읽기 10초','1 / 2'],
+ ['003','빠른 장기','5분 · 초읽기 3초','1 / 2'],
+ ['004','실력 테스트','10분 · 초읽기 5초','1 / 2']
+];
+function openOnlineLobby(){
+ hidePromotion();
+ renderDemoRooms();
+ setTimeout(loadRooms24,80);
+ const o=document.getElementById('onlineOverlay'); if(o)o.style.display='flex';
+}
+function closeOnlineLobby(){
+ const o=document.getElementById('onlineOverlay'); if(o)o.style.display='none';
+}
+function onlineMsg(s){const e=document.getElementById('onlineStatus');if(e)e.innerHTML=s}
+function renderDemoRooms(){
+ const e=document.getElementById('roomList');if(!e)return;
+ e.innerHTML=DEMO_ROOMS.map(r=>`<div style="display:grid;grid-template-columns:55px 1fr 1fr 65px 90px;gap:7px;align-items:center;background:#101722;border:1px solid #2f4159;border-radius:12px;padding:10px;margin:7px 0">
+ <b>${r[0]}</b><span>${r[1]}</span><small>${r[2]}</small><span>${r[3]}</span><button class="dark" onclick="demoEnter('${r[0]}')">참가</button></div>`).join('');
+}
+let demoMatchTimer=null;
+function quickMatchDemo(){
+ if(demoMatchTimer)clearTimeout(demoMatchTimer);
+ onlineMsg('🔎 비슷한 실력의 상대를 찾는 중...');
+ demoMatchTimer=setTimeout(()=>onlineMsg('🛠️ 실제 상대 연결은 서버 연결 단계에서 작동합니다.'),1300);
+}
+function createRoomDemo(){
+ const title=prompt('방 제목을 입력하세요.','즐겁게 한판');
+ if(title)onlineMsg(`🏠 <b>${title}</b> 방을 만들 준비가 되었습니다.`);
+}
+function joinRoomDemo(){
+ const no=prompt('참가할 방 번호를 입력하세요.','001');
+ if(no)demoEnter(no);
+}
+function friendMatchDemo(){
+ const nick=prompt('친구 닉네임을 입력하세요.','');
+ if(nick)onlineMsg(`👥 <b>${nick}</b>님에게 대국 초대를 보낼 준비가 되었습니다.`);
+}
+function demoEnter(no){onlineMsg(`🔑 ${no}번 방 참가를 선택했습니다. 실제 입장은 서버 연결 후 활성화됩니다.`)}
+
+/* ---- 20차: 내 정보 / 프로필 / 업적 ---- */
+function profileAchievements(c,r){
+ const total=c.w+c.l;
+ return [
+  ['🎮 첫 대국',total>=1,'대국 1회'],
+  ['🏆 첫 승리',c.w>=1,'첫 승 달성'],
+  ['🔥 3연승',c.best>=3,'최고 3연승'],
+  ['⚡ 5연승',c.best>=5,'최고 5연승'],
+  ['💯 장기 애호가',total>=10,'10대국'],
+  ['🥇 승리의 길',c.w>=10,'10승'],
+  ['💎 달인',r>=1700,'레이팅 1700'],
+  ['👑 장기왕',r>=2000,'레이팅 2000']
+ ];
+}
+function openProfile(){
+ const c=loadCareer(),d=loadRating(),g=gradeOf(d.rating),total=c.w+c.l,rate=total?Math.round(c.w/total*100):0;
+ let hero=document.getElementById('profileHero');
+ hero.innerHTML=`<div style="font-size:58px">${gradeIcon(g)}</div><div style="font-size:25px;font-weight:900">장기왕 플레이어</div><div style="margin-top:5px">${g} · 레이팅 <b>${d.rating}</b></div>`;
+ let stats=[
+  ['🎮 총 대국',total+'전'],['🏆 승리',c.w+'승'],['📉 패배',c.l+'패'],['📊 승률',rate+'%'],
+  ['🔥 현재 연승',c.streak+'연승'],['⭐ 최고 연승',c.best+'연승'],['💰 보유 포인트',statsPoint()+'P'],['🎨 장기판',premiumSkinName()]
+ ];
+ document.getElementById('profileStats').innerHTML=stats.map(x=>`<div style="background:#101722;border-radius:14px;padding:13px"><small style="opacity:.72">${x[0]}</small><div style="font-size:19px;font-weight:900;margin-top:4px">${x[1]}</div></div>`).join('');
+ document.getElementById('achievementList').innerHTML=profileAchievements(c,d.rating).map(a=>`<div style="padding:12px;border-radius:13px;background:${a[1]?'#ffd257':'#101722'};color:${a[1]?'#172033':'#8290a3'};font-weight:800">${a[0]}<br><small>${a[1]?'달성!':a[2]}</small></div>`).join('');
+ document.getElementById('profileOverlay').style.display='flex';
+}
+function statsPoint(){try{return Number(stats.point)||0}catch(e){return 0}}
+function premiumSkinName(){
+ const id=premiumSkin(),s=PREMIUM_SHOP.find(x=>x.id===id);
+ return s?s.name:'기본 장기판';
+}
+function closeProfile(){let o=document.getElementById('profileOverlay');if(o)o.style.display='none'}
+
+/* ---- 19차: 프리미엄 상점 / 구매 / 실제 적용 ---- */
+const PREMIUM_SHOP=[
+ {id:'wood',name:'고급 원목 장기판',price:300,icon:'🌳'},
+ {id:'moon',name:'달빛 궁궐 장기판',price:600,icon:'🌙'},
+ {id:'gold',name:'황금 장기왕 세트',price:1200,icon:'👑'},
+ {id:'jade',name:'비취 명인 장기판',price:1800,icon:'💚'},
+ {id:'royal',name:'왕실 자개 장기판',price:2600,icon:'✨'}
+];
+function premiumOwned(){
+ try{return JSON.parse(localStorage.getItem('premiumJanggiOwned19'))||['basic']}
+ catch(e){return ['basic']}
+}
+function premiumSkin(){return localStorage.getItem('premiumJanggiSkin19')||'basic'}
+function renderPremiumShop(){
+ let own=premiumOwned(),active=premiumSkin();
+ let pe=document.querySelector('#shopPoints');if(pe)pe.textContent=stats.point+'P';
+ let g=document.querySelector('#premiumShopGrid');if(!g)return;
+ g.innerHTML=PREMIUM_SHOP.map(s=>{
+  let have=own.includes(s.id),on=active===s.id;
+  return `<div style="background:#101722;border:${on?'2px solid #ffd257':'1px solid #34455e'};border-radius:17px;padding:17px;text-align:center">
+   <div style="font-size:43px">${s.icon}</div><b>${s.name}</b><p>${s.price}P</p>
+   <button class="${on?'gold':have?'dark':'gold'}" onclick="${have?`applyPremiumSkin('${s.id}')`:`buyPremiumSkin('${s.id}')`}">${on?'✓ 적용 중':have?'적용하기':'구매하기'}</button>
+  </div>`
+ }).join('');
+}
+function openPremiumShop(){renderPremiumShop();document.querySelector('#shopOverlay').style.display='flex'}
+function closePremiumShop(){document.querySelector('#shopOverlay').style.display='none'}
+function buyPremiumSkin(id){
+ let s=PREMIUM_SHOP.find(x=>x.id===id),own=premiumOwned();if(!s||own.includes(id))return;
+ if(stats.point<s.price){alert('포인트가 부족합니다. AI 대국에서 승리해 포인트를 모아보세요!');return}
+ stats.point-=s.price;saveStats();own.push(id);localStorage.setItem('premiumJanggiOwned19',JSON.stringify(own));
+ ensureAudio();[523,659,784].forEach((f,i)=>setTimeout(()=>tone(f,.18,.65,'triangle'),i*90));
+ applyPremiumSkin(id);drawStats();renderPremiumShop();
+}
+function applyPremiumSkin(id){
+ localStorage.setItem('premiumJanggiSkin19',id);applyPremiumBoard();renderPremiumShop();
+}
+function applyPremiumBoard(){
+ let b=document.querySelector('#b');if(!b)return;let s=premiumSkin();
+ b.style.background='';b.style.boxShadow='';
+ if(s==='wood'){b.style.background='linear-gradient(135deg,#d5a05c,#8a542d)';b.style.boxShadow='inset 0 0 25px #3d210b66,0 10px 28px #0008'}
+ if(s==='moon'){b.style.background='linear-gradient(135deg,#18233f,#50668e)';b.style.boxShadow='0 0 35px #8db7ff77'}
+ if(s==='gold'){b.style.background='linear-gradient(135deg,#77500b,#e6bb4c,#815409)';b.style.boxShadow='0 0 38px #ffd35c99'}
+ if(s==='jade'){b.style.background='linear-gradient(135deg,#285e4b,#7ab89b)';b.style.boxShadow='0 0 35px #69e2ad77'}
+ if(s==='royal'){b.style.background='linear-gradient(135deg,#35213e,#8b668e,#292039)';b.style.boxShadow='0 0 42px #e9b9ff77'}
+}
+
+/* ---- 18차: 레이팅 / 등급 / 랭킹 ---- */
+const RATING_KEY='janggiKingRating18';
+function loadRating(){
+ try{return JSON.parse(localStorage.getItem(RATING_KEY))||{rating:1000,lastGrade:'초보'}}
+ catch(e){return {rating:1000,lastGrade:'초보'}}
+}
+function gradeOf(r){
+ if(r>=2000)return '장기왕';
+ if(r>=1700)return '달인';
+ if(r>=1450)return '고수';
+ if(r>=1250)return '중수';
+ if(r>=1050)return '초보';
+ return '새내기';
+}
+function gradeIcon(g){
+ return ({'새내기':'🌱','초보':'🥉','중수':'🥈','고수':'🥇','달인':'💎','장기왕':'👑'})[g]||'🏅';
+}
+function ratingResult(win){
+ let d=loadRating(),before=gradeOf(d.rating);
+ let delta=win?(difficulty==='hard'?35:difficulty==='normal'?25:18):(difficulty==='hard'?-12:difficulty==='normal'?-18:-22);
+ d.rating=Math.max(0,d.rating+delta);
+ let after=gradeOf(d.rating);
+ localStorage.setItem(RATING_KEY,JSON.stringify({rating:d.rating,lastGrade:after}));
+ if(after!==before && win)showPromotion(after);
+ updateRatingBadges();
+ return delta;
+}
+let promotionHideTimer=null;
+function hidePromotion(){
+ const e=document.querySelector('#promotionToast');
+ if(e){
+   e.style.setProperty('display','none','important');
+   e.style.opacity='0';
+   e.style.pointerEvents='none';
+ }
+ if(promotionHideTimer){clearTimeout(promotionHideTimer);promotionHideTimer=null;}
+}
+function showPromotion(g){
+ const e=document.querySelector('#promotionToast');if(!e)return;
+ hidePromotion();
+ e.textContent=`🎉 ${gradeIcon(g)} ${g} 승급!`;
+ e.style.removeProperty('display');
+ e.style.display='block';
+ e.style.opacity='1';
+ e.style.pointerEvents='none';
+ fanfare();
+ promotionHideTimer=setTimeout(hidePromotion,2200);
+ // 브라우저 타이머 지연 상황을 대비한 추가 안전망
+ setTimeout(()=>{if(e.style.display!=='none')hidePromotion();},3500);
+}
+function updateRatingBadges(){
+ let d=loadRating(),g=gradeOf(d.rating);
+ let card=document.querySelector('#myRatingCard');
+ if(card)card.innerHTML=`<b style="font-size:22px">${gradeIcon(g)} ${g}</b><br>레이팅 <b>${d.rating}</b>점`;
+}
+function openRank(){
+ const d=loadRating(),g=gradeOf(d.rating);
+ const names=[
+  ['👑 장기왕 도전자',2120],['💎 한나라 AI',1840],['🥇 연승생',1580],
+  ['⚔️ 마상마상',1390],['🏹 포의달인',1270],['🙂 나',d.rating],
+  ['🌱 새내기왕',930]
+ ].sort((a,b)=>b[1]-a[1]);
+ document.querySelector('#myRatingCard').innerHTML=`나의 등급: <b>${gradeIcon(g)} ${g}</b> · 레이팅 <b>${d.rating}</b>점`;
+ document.querySelector('#rankList').innerHTML=names.map((x,i)=>{
+   const me=x[0].includes('나');
+   return `<div style="display:flex;justify-content:space-between;padding:12px 14px;margin:7px 0;border-radius:12px;background:${me?'#ffd257':'#101722'};color:${me?'#172033':'inherit'};font-weight:${me?'900':'700'}"><span>${i+1}위 ${x[0]}</span><span>${x[1]}점</span></div>`
+ }).join('');
+ document.querySelector('#rankOverlay').style.display='flex';
+}
+function closeRank(){document.querySelector('#rankOverlay').style.display='none'}
+
+/* ---- 17차: 영구 전적 통계 / 최근 대국 ---- */
+const CAREER_KEY='janggiKingCareer17';
+function loadCareer(){
+ try{return JSON.parse(localStorage.getItem(CAREER_KEY))||{w:0,l:0,streak:0,best:0,games:[]}}
+ catch(e){return {w:0,l:0,streak:0,best:0,games:[]}}
+}
+function saveCareer(c){localStorage.setItem(CAREER_KEY,JSON.stringify(c))}
+function updateCareerUI(){
+ const c=loadCareer(),g=c.w+c.l,rate=g?Math.round(c.w/g*100):0;
+ const e=document.querySelector('#careerSummary');
+ if(e){const rd=loadRating(),gr=gradeOf(rd.rating);e.textContent=`${gradeIcon(gr)} ${gr} ${rd.rating}점 · 총 ${g}전 ${c.w}승 ${c.l}패 · 승률 ${rate}% · 현재 ${c.streak}연승 · 최고 ${c.best}연승`;}
+}
+function addCareerResult(win,reason){
+ const c=loadCareer();
+ if(win){c.w++;c.streak++;c.best=Math.max(c.best,c.streak)}
+ else{c.l++;c.streak=0}
+ c.games.unshift({
+   when:new Date().toLocaleString(),
+   result:win?'승리':'패배',
+   reason,
+   level:difficulty==='easy'?'초급':difficulty==='hard'?'고급':'중급',
+   formation,
+   moves:moveCount
+ });
+ c.games=c.games.slice(0,20);
+ saveCareer(c);updateCareerUI();
+}
+function showRecentMatches(){
+ const c=loadCareer();
+ let s='🗂 최근 대국 기록\n\n';
+ if(!c.games.length)s+='아직 저장된 대국이 없습니다.';
+ else c.games.slice(0,10).forEach((g,i)=>{
+   s+=`${i+1}. ${g.result} · ${g.level} · ${g.moves}수\n   ${g.when}\n`;
+ });
+ alert(s);
+}
+
+/* ---- 16차: 대국 결과 화면 / 요약 ---- */
+function resultText(win,reason){
+ const secs=Math.max(0,Math.floor((Date.now()-matchStart)/1000));
+ const mm=Math.floor(secs/60),ss=secs%60;
+ return `결과: <b>${win?'초(楚) 승리':'한(漢) 승리'}</b><br>
+ 종료: ${reason}<br>
+ 총 착수: ${moveCount}수<br>
+ 대국 시간: ${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}<br>
+ 진형: ${formation}<br>
+ 난이도: ${difficulty==='easy'?'초급':difficulty==='hard'?'고급':'중급'}<br>
+ 기물점수: 초 ${sideScore('blue')} · 한 ${sideScore('red')}`;
+}
+let careerRecordedForMatch=false;
+function showResult(win,reason){
+ const o=document.querySelector('#resultOverlay');if(!o)return;
+ if(!careerRecordedForMatch){addCareerResult(win,reason);ratingResult(win);careerRecordedForMatch=true;}
+ document.querySelector('#resultIcon').textContent=win?'🏆':'🤖';
+ document.querySelector('#resultTitle').textContent=win?'장기왕 승리!':'컴퓨터 승리';
+ document.querySelector('#resultSummary').innerHTML=resultText(win,reason);
+ o.style.setProperty('display','flex','important');
+ if(win)fanfare();else loseSound();
+}
+function closeResult(){let o=document.querySelector('#resultOverlay');if(o)o.style.display='none'}
+function closeResultAndNew(){closeResult();newMatch()}
+
+/* ---- 15차 FIX: 지연 없는 즉시응답 AI ---- */
+function ai(){
+ if(over||turn!=='red'||aiBusy)return;
+ aiBusy=true;
+ try{
+   const m=fastAIMoves();
+   if(!m.length){
+     aiBusy=false;over=true;if(turnTimer)clearInterval(turnTimer);
+     ST.textContent='🎉 컴퓨터가 둘 수 없습니다. 초(楚) 승리!';
+     saveHistory('승리');reward(true);render();setTimeout(()=>showResult(true,'상대가 둘 수 없음'),350);return;
+   }
+   const val={K:100000,R:130,C:70,H:50,E:30,A:30,P:20};
+   let q;
+   if(difficulty==='easy'){
+     const caps=m.filter(z=>z.cap);
+     q=(caps.length&&Math.random()<.40)?caps[Math.floor(Math.random()*caps.length)]
+                                      :m[Math.floor(Math.random()*m.length)];
+   } else {
+     let best=-1e9, candidates=[];
+     for(const z of m){
+       let s=(val[z.cap?.t.toUpperCase()]||0);
+       // 중앙/전진/궁성 접근을 단순 산술로만 평가: 추가 합법수 탐색 없음
+       s+=(4-Math.abs(4-z.x))*(difficulty==='hard'?4:2);
+       s+=(9-z.y)*(difficulty==='hard'?1.2:.5);
+       if(z.cap?.t.toUpperCase()==='K')s+=1000000;
+       // 고급은 차/포/마를 조금 더 보존
+       if(difficulty==='hard'){
+         const pv=val[z.p.t.toUpperCase()]||10;
+         const target=at(z.x,z.y);
+         if(target && (val[target.t.toUpperCase()]||0)>=pv)s+=12;
+       }
+       s+=Math.random()*(difficulty==='hard'?2:8);
+       if(s>best+0.001){best=s;candidates=[z]}
+       else if(Math.abs(s-best)<0.001)candidates.push(z);
+     }
+     q=candidates[Math.floor(Math.random()*candidates.length)];
+   }
+   aiBusy=false;
+   move(q.p,q.x,q.y,true);
+ }catch(err){
+   console.error(err);aiBusy=false;
+   const m=fastAIMoves();
+   if(m.length){const q=m[Math.floor(Math.random()*m.length)];move(q.p,q.x,q.y,true)}
+   else{turn='blue';render();updateMatchInfo();startTurnClock()}
+ }
+}
+
+function undo(){if(!H.length)return;P=JSON.parse(H.pop());if(turn=='blue'&&H.length)P=JSON.parse(H.pop());turn='blue';sel=null;over=false;render()}reset();drawStats();setDifficulty('normal');updateMatchInfo();updateScoreInfo();refreshRuleUI();setTimeout(()=>{skinStyle();drawLastMove()},50);
+
+setTimeout(updateCareerUI,0);
+
+/* ---- 메뉴 선택 표시 ---- */
+function activateTopMenu(btn){
+ const bar=btn.closest('nav')||btn.parentElement;
+ if(!bar)return;
+ bar.querySelectorAll('button').forEach(b=>b.classList.remove('menu-active'));
+ btn.classList.add('menu-active');
+}
+document.addEventListener('click',e=>{
+ const b=e.target.closest('button');
+ if(!b)return;
+ const txt=(b.textContent||'').trim();
+ if(['AI 대국','온라인 대국','랭킹','상점','내 정보'].some(x=>txt.includes(x))){
+   activateTopMenu(b);
+   if(txt.includes('온라인 대국'))openOnlineLobby();
+   if(txt.includes('랭킹'))openRank();
+   if(txt.includes('상점'))openPremiumShop();
+   if(txt.includes('내 정보'))openProfile();
+ }
+});
+setTimeout(()=>{
+ const bs=[...document.querySelectorAll('button')];
+ const ai=bs.find(b=>(b.textContent||'').includes('AI 대국'));
+ if(ai)activateTopMenu(ai);
+},0);
+
+
+setTimeout(updateRatingBadges,0);
+
+setTimeout(applyPremiumBoard,50);
+
+/* ---- 19차 FIX: 상점 닫기 버튼 확실한 동작 ---- */
+function forceClosePremiumShop(){
+ const o=document.getElementById('shopOverlay');
+ if(o){o.style.setProperty('display','none','important');}
+}
+document.addEventListener('DOMContentLoaded',()=>{
+ const btn=document.getElementById('premiumShopCloseBtn');
+ if(btn){
+   btn.onclick=function(e){
+     e.preventDefault();e.stopPropagation();
+     forceClosePremiumShop();
+     return false;
+   };
+ }
+ const ov=document.getElementById('shopOverlay');
+ if(ov){
+   ov.addEventListener('click',function(e){
+     if(e.target===ov)forceClosePremiumShop();
+   });
+ }
+});
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape')forceClosePremiumShop();
+});
+
+
+document.addEventListener('DOMContentLoaded',()=>{
+ const b=document.getElementById('profileCloseBtn');
+ if(b)b.onclick=e=>{e.preventDefault();e.stopPropagation();closeProfile();};
+ const o=document.getElementById('profileOverlay');
+ if(o)o.addEventListener('click',e=>{if(e.target===o)closeProfile();});
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeProfile();});
+
+
+/* ---- 20차 FIX: 장시간 방치 후 입력 멈춤 자동복구 ---- */
+let lastInteractionAt=Date.now();
+function recoverFrozenGame(){
+ try{
+   if(over)return;
+   // 선택 표시가 오래 남아 입력을 가로막는 경우 초기화
+   if(turn==='b'){
+     aiBusy=false;
+     if(aiTimer){clearTimeout(aiTimer);aiTimer=null;}
+     status.textContent='🔵 초(楚) 차례 · 기물을 선택하세요';
+     render();
+     return;
+   }
+   // 한(컴퓨터) 차례에서 타이머/AI 상태가 꼬였으면 즉시 재예약
+   if(turn==='r'){
+     aiBusy=false;
+     if(aiTimer){clearTimeout(aiTimer);aiTimer=null;}
+     scheduleStableAI();
+   }
+ }catch(e){
+   try{
+     aiBusy=false;
+     if(turn==='r')scheduleStableAI();
+     else {turn='b';render();}
+   }catch(_){}
+ }
+}
+document.addEventListener('pointerdown',()=>{
+ lastInteractionAt=Date.now();
+ // 사람이 눌렀는데 초 차례인데도 잠금 플래그가 남았으면 즉시 해제
+ if(!over && turn==='b' && aiBusy)aiBusy=false;
+},{capture:true});
+
+document.addEventListener('visibilitychange',()=>{
+ if(!document.hidden)setTimeout(recoverFrozenGame,80);
+});
+window.addEventListener('focus',()=>setTimeout(recoverFrozenGame,100));
+
+// 2초마다 아주 가볍게 상태만 확인. AI 계산 자체는 반복하지 않는다.
+setInterval(()=>{
+ if(over)return;
+ if(turn==='r' && !aiBusy) scheduleStableAI();
+ if(turn==='b' && aiBusy) aiBusy=false;
+},2000);
+
+
+document.addEventListener('DOMContentLoaded',()=>{
+ const b=document.getElementById('onlineCloseBtn');
+ if(b)b.onclick=e=>{e.preventDefault();e.stopPropagation();closeOnlineLobby();};
+ const o=document.getElementById('onlineOverlay');
+ if(o)o.addEventListener('click',e=>{if(e.target===o)closeOnlineLobby();});
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOnlineLobby();});
+
+
+document.addEventListener('DOMContentLoaded',()=>{
+ updateNickname22();
+ const s=document.getElementById('nicknameSaveBtn');
+ if(s)s.onclick=saveNickname22;
+ const c=document.getElementById('loginCloseBtn');
+ if(c)c.onclick=closeLogin22;
+ const i=document.getElementById('nicknameInput');
+ if(i)i.addEventListener('keydown',e=>{if(e.key==='Enter')saveNickname22();});
+ const o=document.getElementById('loginOverlay');
+ if(o)o.addEventListener('click',e=>{if(e.target===o)closeLogin22();});
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLogin22();});
+
+
+/* ---- 22차 FIX: 승급 알림 잔류 방지 ---- */
+document.addEventListener('click',e=>{
+ const p=e.target.closest && e.target.closest('#promotionToast');
+ if(p)hidePromotion();
+});
+document.addEventListener('visibilitychange',()=>{
+ if(!document.hidden){
+   const p=document.getElementById('promotionToast');
+   if(p && p.style.display!=='none') setTimeout(hidePromotion,250);
+ }
+});
+
+
+document.addEventListener('DOMContentLoaded',()=>{
+ const b=document.getElementById('serverClose23');if(b)b.onclick=closeServer23;
+ const o=document.getElementById('serverOverlay');if(o)o.addEventListener('click',e=>{if(e.target===o)closeServer23();});
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeServer23();});
+
+
+async function copySql24(){
+ const e=document.getElementById('sql24');
+ try{await navigator.clipboard.writeText(e.value);alert('24차 SQL을 복사했습니다.');}
+ catch(_){e.select();document.execCommand('copy');alert('24차 SQL을 복사했습니다.');}
+}
+
+function copySql25(){const e=document.getElementById('sql25');navigator.clipboard.writeText(e.value).then(()=>alert('25차 SQL을 복사했습니다.')).catch(()=>{e.select();document.execCommand('copy');alert('25차 SQL을 복사했습니다.');});}
+</script>
+<script>
+/* ===== 26차: 실제 2인 장기판/착수 서버 동기화 ===== */
+let online26=false, online26Applying=false, online26MoveNo=-1, online26Ready=false;
+function myColor26(){return room25Role==='host'?'blue':'red'}
+function onlineState26(){return {pieces:P.map(p=>({t:p.t,x:p.x,y:p.y,c:p.c,id:p.id})),turn,over,moveCount,lastMove,notation}}
+function applyOnlineState26(st,no){
+ if(!st||!Array.isArray(st.pieces))return;
+ online26Applying=true; P=st.pieces;turn=st.turn||'blue';over=!!st.over;moveCount=st.moveCount||0;lastMove=st.lastMove||null;notation=Array.isArray(st.notation)?st.notation:[];sel=null;H=[];online26MoveNo=Number(no||0);online26Applying=false;
+ render();drawLastMove();updateMatchInfo();updateScoreInfo();
+}
+async function pushOnline26(){
+ if(!online26||online26Applying||!sb23||!room25Id)return;
+ online26MoveNo=Math.max(0,online26MoveNo)+1;
+ const {error}=await sb23.from('janggi_rooms').update({game_state:onlineState26(),game_turn:turn,move_no:online26MoveNo}).eq('id',room25Id);
+ if(error){ST.textContent='🔴 서버 착수 저장 실패: '+(error.message||error);}
+}
+async function startOnline26(){
+ if(!sb23||!room25Id)return;
+ if(room25Role!=='host'){document.getElementById('matchState25').innerHTML='🟡 방장이 대국을 시작할 때까지 기다려주세요.';return}
+ reset(); online26=true; online26MoveNo=0; over=false; turn='blue'; sel=null;
+ const {error}=await sb23.from('janggi_rooms').update({game_state:onlineState26(),game_turn:'blue',move_no:0,status:'playing'}).eq('id',room25Id);
+ if(error){document.getElementById('matchState25').innerHTML='🔴 26차 SQL이 아직 적용되지 않았습니다.<br><small>서버 설정의 26차 SQL을 먼저 실행해주세요.</small>';return}
+ document.getElementById('matchRoom25').style.display='none'; online26Ready=true; render(); ST.textContent='🌐 온라인 대국 시작 · 초(楚) 차례';
+}
+async function refreshOnline26(r){
+ if(!r)return;
+ if(r.game_state&&Array.isArray(r.game_state.pieces)){
+   online26=true;online26Ready=true;
+   if(Number(r.move_no||0)!==online26MoveNo)applyOnlineState26(r.game_state,r.move_no);
+   document.getElementById('matchRoom25').style.display='none';
+ }
+}
+const oldRenderMatch25_26=renderMatch25;
+renderMatch25=function(r){
+ oldRenderMatch25_26(r);
+ const b=document.getElementById('startOnline26Btn');
+ if(b)b.style.display=(r.guest_nickname&&room25Role==='host'&&!r.game_state)?'block':'none';
+ if(r.game_state){document.getElementById('matchState25').innerHTML='🟢 <b>온라인 대국 진행 중</b><br><small>장기판으로 자동 입장합니다.</small>';}
+};
+refreshMatch25=async function(){
+ if(!room25Id||!sb23)return;
+ const {data,error}=await sb23.from('janggi_rooms').select('id,title,host_nickname,guest_nickname,status,host_id,guest_id,game_state,game_turn,move_no').eq('id',room25Id).single();
+ if(!error&&data){renderMatch25(data);await refreshOnline26(data)}
+};
+const scheduleStableAIBase26=scheduleStableAI;
+scheduleStableAI=function(){if(online26)return;return scheduleStableAIBase26()};
+const startTurnClockBase26=startTurnClock;
+startTurnClock=function(){if(online26){if(turnTimer)clearInterval(turnTimer);paintTurnClock();return}return startTurnClockBase26()};
+const moveBase26=move;
+move=function(p,x,y,noAI=false){
+ if(online26&&!online26Applying){if(over||p.c!==myColor26()||turn!==myColor26())return}
+ moveBase26(p,x,y,online26?true:noAI);
+ if(online26&&!online26Applying)pushOnline26();
+};
+render=function(){
+ lines();
+ P.forEach(p=>{let e=document.createElement('div'),x=flip?8-p.x:p.x,y=flip?9-p.y:p.y;e.className='p '+p.c+(sel?.id==p.id?' sel':'');e.dataset.id=p.id;e.style.left=(5.5+x*11.125)+'%';e.style.top=(5+y*10)+'%';e.textContent=N[p.t];e.onclick=ev=>{ev.stopPropagation();pick(p)};B.append(e)});
+ const human=online26?myColor26():'blue';
+ if(sel&&turn===human&&!over){for(let yy=0;yy<10;yy++)for(let xx=0;xx<9;xx++)if(safeLegal(sel,xx,yy)){let h=document.createElement('div'),hx=flip?8-xx:xx,hy=flip?9-yy:yy;h.className='movehint'+(at(xx,yy)?' capturehint':'');h.style.left=(5.5+hx*11.125)+'%';h.style.top=(5+hy*10)+'%';h.style.pointerEvents='auto';h.onclick=(ev)=>{ev.stopPropagation();let chosen=sel;if(chosen&&safeLegal(chosen,xx,yy))move(chosen,xx,yy,true)};B.append(h)}}
+ if(online26)ST.textContent=over?'🏁 온라인 대국 종료':(turn===human?'🟢 내 차례 · '+(human==='blue'?'초(楚)':'한(漢)'):'⏳ 상대 차례를 기다리는 중...');
+ else ST.textContent=over?'대국 종료':turn==='blue'?'🔵 내 차례':'🤖 컴퓨터가 생각 중...';
+};
+pick=function(p){
+ const human=online26?myColor26():'blue'; if(turn!==human||over)return;
+ if(sel&&p.c!==human&&safeLegal(sel,p.x,p.y)){move(sel,p.x,p.y,true);return}
+ if(p.c===human){sel=p;render()}
+};
+B.onclick=e=>{const human=online26?myColor26():'blue';if(turn!==human||!sel||over)return;let r=B.getBoundingClientRect(),x=Math.round(((e.clientX-r.left)/r.width*100-5.5)/11.125),y=Math.round(((e.clientY-r.top)/r.height*100-5)/10);if(flip){x=8-x;y=9-y}if(safeLegal(sel,x,y))move(sel,x,y,true)};
+const leaveMatchBase26=leaveMatchRoom25;
+leaveMatchRoom25=function(){online26=false;online26Ready=false;online26MoveNo=-1;return leaveMatchBase26()};
+// 26차 SQL 안내를 서버 설정창에 자동 추가
+window.addEventListener('DOMContentLoaded',()=>{
+ const box=document.querySelector('#serverOverlay23 .serverbox, #serverOverlay23>div');
+ if(box&&!document.getElementById('sql26box')){
+  const d=document.createElement('details');d.id='sql26box';d.style.marginTop='10px';d.innerHTML=`<summary style="cursor:pointer;font-weight:900">⚔️ 26차 최초 1회: 장기판 동기화 칸 추가</summary><div style="margin-top:9px;background:#101722;padding:10px;border-radius:10px;text-align:left"><code style="white-space:pre-wrap">alter table public.janggi_rooms add column if not exists game_state jsonb;\nalter table public.janggi_rooms add column if not exists game_turn text;\nalter table public.janggi_rooms add column if not exists move_no integer not null default 0;</code><button class="gold" style="width:100%;margin-top:9px" onclick="copySql26()">📋 26차 SQL 복사</button></div>`;box.appendChild(d);
+ }
+});
+function copySql26(){navigator.clipboard.writeText("alter table public.janggi_rooms add column if not exists game_state jsonb;\nalter table public.janggi_rooms add column if not exists game_turn text;\nalter table public.janggi_rooms add column if not exists move_no integer not null default 0;").then(()=>alert('26차 SQL을 복사했습니다. Supabase SQL Editor에 붙여넣고 Run을 누르세요.'))}
+</script>
+
+
+<script>
+/* ---- 26차 FIX: 2명 입장 후 실제 장기판 자동 진입 ---- */
+let autoStarting26Fix=false;
+function enterOnlineBoard26Fix(){
+  // 서버는 약 1.5초마다 상태를 확인하므로 이 함수도 반복 호출된다.
+  // 이미 장기판 화면에 들어온 뒤에는 현재 스크롤 위치를 절대 건드리지 않는다.
+  const alreadyOnBoard =
+    online26 &&
+    document.getElementById('gamePage') &&
+    document.getElementById('gamePage').style.display === 'block' &&
+    document.getElementById('matchRoom25') &&
+    document.getElementById('matchRoom25').style.display === 'none' &&
+    document.getElementById('onlineOverlay') &&
+    document.getElementById('onlineOverlay').style.display === 'none';
+
+  const keepY = window.scrollY;
+
+  const mr=document.getElementById('matchRoom25'); if(mr)mr.style.display='none';
+  const ol=document.getElementById('onlineOverlay'); if(ol)ol.style.display='none';
+  const so=document.getElementById('startOverlay'); if(so)so.style.display='none';
+  const portal=document.getElementById('portal'); if(portal)portal.innerHTML='';
+  const gp=document.getElementById('gamePage'); if(gp)gp.style.display='block';
+
+  render(); drawLastMove(); updateMatchInfo(); updateScoreInfo();
+
+  // 최초 입장 때만 장기판 쪽으로 이동한다.
+  // 이후 서버 새로고침에서는 사용자가 보고 있던 위치를 그대로 유지한다.
+  if(!alreadyOnBoard){
+    const board=document.getElementById('b');
+    if(board){
+      const y=Math.max(0, board.getBoundingClientRect().top + window.scrollY - 150);
+      window.scrollTo({top:y,behavior:'auto'});
+    }
+  }else{
+    window.scrollTo({top:keepY,behavior:'auto'});
+  }
+}
+const startOnline26FixBase=startOnline26;
+startOnline26=async function(){
+  if(autoStarting26Fix)return;
+  autoStarting26Fix=true;
+  try{
+    await startOnline26FixBase();
+    if(online26Ready){ enterOnlineBoard26Fix(); ST.textContent='🌐 온라인 대국 시작 · 초(楚) 차례'; }
+  }finally{ autoStarting26Fix=false; }
+};
+const refreshOnline26FixBase=refreshOnline26;
+refreshOnline26=async function(r){
+  if(!r)return;
+  // 방장: 참가자가 들어오면 별도 버튼 없이 한 번만 자동 시작
+  if(room25Role==='host' && r.guest_nickname && !r.game_state && !online26Ready && !autoStarting26Fix){
+    await startOnline26();
+    return;
+  }
+  await refreshOnline26FixBase(r);
+  if(r.game_state && Array.isArray(r.game_state.pieces)){
+    enterOnlineBoard26Fix();
+    const human=myColor26();
+    ST.textContent=(turn===human)?('🟢 내 차례 · '+(human==='blue'?'초(楚)':'한(漢)')):'⏳ 상대 차례를 기다리는 중...';
+  }
+};
+</script>
+
+<script>
+/* =========================================================
+   27차 : 온라인 대국 종료 / 기권 / 방 나가기 처리
+   - 기존 26차 양방향 착수 동기화 유지
+   - 온라인에서는 기권 시 서버에 종료 상태 전파
+   - 대국 전/후 로비로 안전하게 복귀
+   - 상대가 기권/퇴장하면 양쪽에 결과 안내
+   ========================================================= */
+(function(){
+  let online27Leaving = false;
+  let online27FinishedRoom = 0;
+  let online27LastNotice = "";
+
+  function sb27(){
+    try { return (typeof getSB25 === "function") ? getSB25() : null; }
+    catch(e){ return null; }
+  }
+  function room27(){ return Number(window.roomId25 || 0); }
+  function cid27(){
+    try { return (typeof clientId25 === "function") ? clientId25() : ""; }
+    catch(e){ return ""; }
+  }
+  function role27(){
+    try { return (typeof myRole25 === "function") ? myRole25() : ""; }
+    catch(e){ return ""; }
+  }
+  function esc27(s){
+    return String(s??"").replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
+  }
+  function toast27(msg){
+    if(window.online27LastNotice===msg) return;
+    window.online27LastNotice=msg;
+    try{
+      if(typeof toast==="function") toast(msg);
+      else alert(msg);
+    }catch(e){ alert(msg); }
+  }
+  function showOnlineResult27(title, detail){
+    let box=document.getElementById("onlineResult27");
+    if(!box){
+      box=document.createElement("div");
+      box.id="onlineResult27";
+      box.style.cssText="position:fixed;inset:0;z-index:100000;background:rgba(3,9,18,.78);display:flex;align-items:center;justify-content:center;padding:20px";
+      document.body.appendChild(box);
+    }
+    box.innerHTML=`
+      <div style="width:min(430px,92vw);background:#18263a;border:1px solid #40516a;border-radius:22px;padding:28px;color:white;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.45)">
+        <div style="font-size:46px;margin-bottom:8px">🏯</div>
+        <div style="font-size:28px;font-weight:900">${esc27(title)}</div>
+        <div style="margin:14px 0 22px;color:#cbd5e1;line-height:1.6">${esc27(detail)}</div>
+        <button id="onlineResult27Lobby" style="width:100%;border:0;border-radius:12px;padding:14px;font-weight:900;font-size:16px;background:#ffd166;color:#172033;cursor:pointer">🌐 온라인 로비로 돌아가기</button>
+      </div>`;
+    box.style.display="flex";
+    document.getElementById("onlineResult27Lobby").onclick=()=>leaveOnlineRoom27(false);
+  }
+  function hideOnlineResult27(){
+    const b=document.getElementById("onlineResult27"); if(b)b.style.display="none";
+  }
+
+  async function finishRoom27(reason, winner){
+    const sb=sb27(), id=room27();
+    if(!sb || !id) return false;
+    const state = (typeof onlineState26==="function") ? onlineState26() : {};
+    state.online_result = { reason, winner, at:new Date().toISOString() };
+    const nextNo = Number(window.online26MoveNo||0)+1;
+    const {error}=await sb.from("janggi_rooms").update({
+      status:"finished",
+      game_state:state,
+      game_turn:"finished",
+      move_no:nextNo
+    }).eq("id",id);
+    if(error){ console.warn("27 finish error",error); return false; }
+    window.online26MoveNo=nextNo;
+    return true;
+  }
+
+  window.resignOnline27 = async function(){
+    if(!window.online26 || !room27()) return false;
+    if(!confirm("온라인 대국을 기권하시겠습니까?\n기권하면 상대방의 승리로 종료됩니다.")) return true;
+    const mine = (typeof myColor26==="function") ? myColor26() : (role27()==="host"?"b":"r");
+    const winner = mine==="b" ? "r" : "b";
+    await finishRoom27("resign", winner);
+    try { window.over=true; } catch(e){}
+    showOnlineResult27("기권했습니다", "상대방의 승리로 대국이 종료되었습니다.");
+    return true;
+  };
+
+  window.leaveOnlineRoom27 = async function(confirmLeave=true){
+    if(online27Leaving) return;
+    if(confirmLeave && window.online26 && !window.over){
+      if(!confirm("대국 중 방을 나가시겠습니까?\n대국 중 퇴장은 기권으로 처리됩니다.")) return;
+      await resignOnline27();
+      return;
+    }
+    online27Leaving=true;
+    try{
+      const sb=sb27(), id=room27(), me=cid27(), role=role27();
+      if(sb && id){
+        if(role==="guest"){
+          await sb.from("janggi_rooms").update({
+            guest_id:null, guest_nickname:null,
+            status:"waiting", game_state:null, game_turn:null, move_no:0
+          }).eq("id",id).eq("guest_id",me);
+        }else if(role==="host"){
+          // 방장은 종료된/대기 방을 정리해 재사용되지 않도록 표시
+          await sb.from("janggi_rooms").update({status:"closed"}).eq("id",id).eq("host_id",me);
+        }
+      }
+    }catch(e){ console.warn(e); }
+    try{
+      window.online26=false; window.online26Ready=false; window.roomId25=0; window.role25="";
+      hideOnlineResult27();
+      const mr=document.getElementById("matchRoom25"); if(mr)mr.style.display="none";
+      const ol=document.getElementById("onlineOverlay"); if(ol)ol.style.display="flex";
+      if(typeof refreshRooms25==="function") refreshRooms25();
+    }finally{
+      setTimeout(()=>online27Leaving=false,500);
+    }
+  };
+
+  // 기존 기권 버튼은 온라인 대국일 때 서버 기권으로 바꾼다.
+  document.addEventListener("click", async function(e){
+    const t=e.target && e.target.closest ? e.target.closest("button") : null;
+    if(!t || !window.online26) return;
+    const tx=(t.textContent||"").trim();
+    if(tx.includes("기권")){
+      e.preventDefault(); e.stopImmediatePropagation();
+      await resignOnline27();
+    }
+  }, true);
+
+  // 매치 팝업의 "로비로 돌아가기"는 실제 방 나가기 처리
+  document.addEventListener("click", function(e){
+    const t=e.target && e.target.closest ? e.target.closest("button") : null;
+    if(!t || !window.online26) return;
+    const tx=(t.textContent||"").trim();
+    if(tx.includes("로비로 돌아가기")){
+      e.preventDefault(); e.stopImmediatePropagation();
+      leaveOnlineRoom27(true);
+    }
+  }, true);
+
+  // 서버 상태 감시: 상대 기권/퇴장/종료를 양쪽에 반영
+  setInterval(async()=>{
+    if(!window.online26 || !room27() || online27Leaving) return;
+    const sb=sb27(); if(!sb)return;
+    try{
+      const {data,error}=await sb.from("janggi_rooms")
+        .select("id,status,host_id,guest_id,game_state,game_turn,move_no")
+        .eq("id",room27()).maybeSingle();
+      if(error || !data) return;
+
+      if(data.status==="finished" && online27FinishedRoom!==data.id){
+        online27FinishedRoom=data.id;
+        const result=data.game_state && data.game_state.online_result;
+        const mine=(typeof myColor26==="function")?myColor26():(role27()==="host"?"b":"r");
+        const won=result && result.winner===mine;
+        try { window.over=true; } catch(e){}
+        showOnlineResult27(won ? "승리했습니다! 🎉" : "대국 종료",
+          result && result.reason==="resign"
+            ? (won ? "상대방이 기권했습니다." : "기권으로 대국이 종료되었습니다.")
+            : "온라인 대국이 종료되었습니다.");
+      }else if(data.status==="playing"){
+        const role=role27(), opponentGone=(role==="host"?!data.guest_id:!data.host_id);
+        if(opponentGone && !window.over){
+          try { window.over=true; } catch(e){}
+          showOnlineResult27("상대방이 나갔습니다", "온라인 대국이 종료되었습니다.");
+        }
+      }
+    }catch(e){}
+  },1500);
+
+  // 페이지를 닫는 순간에는 브라우저 정책상 확실한 서버 업데이트를 보장할 수 없으므로
+  // 화면 버튼을 통한 나가기/기권을 정식 경로로 사용한다.
+  console.log("27차 온라인 종료/기권/나가기 모듈 준비 완료");
+})();
+</script>
+
+</body></html>
