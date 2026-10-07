@@ -1,5 +1,5 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>온라인 장기왕 WEB 2차</title><style>
+<title>온라인 장기왕 WEB 30차</title><style>
 *{box-sizing:border-box}body{margin:0;background:#10151d;color:#fff;font-family:system-ui,"Malgun Gothic",sans-serif}
 header{text-align:center;padding:14px;background:#1d2635}h1{margin:0;font-size:clamp(24px,4vw,38px)}.sub{color:#aeb9ca}
 main{max-width:1100px;margin:auto;padding:14px}.top{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
@@ -46,8 +46,24 @@ nav button.menu-active{
   font-weight:900 !important;
 }
 
+
+/* ---- 30차: 스마트폰 공개용 UI ---- */
+html{-webkit-text-size-adjust:100%;touch-action:manipulation}
+body{padding-bottom:env(safe-area-inset-bottom)}
+button,input,select{font-size:16px}
+@media(max-width:600px){
+ header{padding:10px 8px} header h1{font-size:25px}.sub{font-size:12px}
+ nav{gap:5px!important;padding:7px 5px!important}nav button{padding:9px 8px;font-size:13px}
+ main{padding:8px}#b{width:min(96vw,630px);border-width:5px}
+ .p{font-size:clamp(12px,4.8vw,21px);border-width:2px}
+ .movehint{width:24px;height:24px}.capturehint{width:38px;height:38px}
+ #matchInfo{font-size:13px;margin:0 6px 8px;padding:8px}
+ .hero{padding:15px 10px}.hero h2{font-size:26px}
+ #onlineOverlay>div,#matchRoom25>div,#serverOverlay>div{padding:15px!important;border-radius:17px!important}
+ #onlineOverlay button,#matchRoom25 button{min-height:46px}
+}
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head><body><header><h1>🏯 온라인 장기왕 WEB</h1><div class=sub>27차 · 온라인 종료·기권·나가기 · Supabase</div></header>
+</head><body><header><h1>🏯 온라인 장기왕 WEB</h1><div class=sub>30차 · 스마트폰 공개용 · 온라인 2인 대국 · Supabase</div></header>
 <nav style="position:sticky;top:0;z-index:20;background:#151d29;border-bottom:1px solid #344055;padding:9px;display:flex;gap:7px;justify-content:center;flex-wrap:wrap">
 <button class="gold" onclick="showPage('game')">⚔️ AI 대국</button>
 <button class="dark" onclick="showPage('online')">🌐 온라인 대국</button>
@@ -56,6 +72,7 @@ nav button.menu-active{
 <button class="dark" onclick="showPage('mypage')">👤 내 정보</button>
 </nav>
 <div id="portal" style="max-width:1100px;margin:14px auto;padding:0 14px"></div>
+<div id="public30Notice" style="max-width:1100px;margin:0 auto 10px;padding:0 14px;text-align:center;color:#aeb9ca;font-size:13px">📱 스마트폰에서는 링크를 열고 닉네임을 정한 뒤 온라인 대국방에 입장하세요.</div>
 
 
 
@@ -144,7 +161,7 @@ create policy "rooms_update" on public.janggi_rooms for update to anon using (tr
   <div id="roomList"></div>
   <button class="dark" style="width:100%;margin-top:8px" onclick="loadRooms24()">🔄 서버 대국방 새로고침</button>
   <div style="margin-top:15px;padding:12px;border-radius:13px;background:#101722;opacity:.8">
-   ℹ️ 26차는 방장과 참가자의 장기판/차례/착수를 서버에서 동기화합니다. 최초 1회 26차 SQL을 실행한 뒤 새 방으로 테스트하세요.
+   ℹ️ 30차 공개 테스트: 방장과 참가자의 장기판/차례/착수를 서버에서 동기화합니다. 서버 준비가 끝난 뒤 새 방으로 테스트하세요.
   </div>
  </div>
 </div>
@@ -493,7 +510,7 @@ function showPage(page){
  const portal=document.querySelector('#portal'), game=document.querySelector('#gamePage');
  if(page==='game'){portal.innerHTML='';game.style.display='block';setTimeout(skinStyle,30);window.scrollTo({top:0,behavior:'smooth'});return}
  game.style.display='none';
- if(page==='online') portal.innerHTML=`<section class=hero><span class=badge>25차 ONLINE</span><h2>🌐 실시간 온라인 대국</h2><p>서버에 연결한 뒤 실제 대국방을 만들거나 참가할 수 있습니다.</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class=gold onclick="openOnlineLobby()">🚪 온라인 대국방 들어가기</button><button class=dark onclick="openServer23()">🔌 서버 설정</button></div></section><div class=tiles><div class=tile><b>⚡ 빠른 매칭</b><p>비슷한 실력의 상대와 자동 매칭</p></div><div class=tile><b>👥 친구 대국</b><p>방 번호로 지인과 바로 대국</p></div><div class=tile><b>👁️ 관전실</b><p>인기 대국을 함께 관전</p></div></div>`;
+ if(page==='online') portal.innerHTML=`<section class=hero><span class=badge>30차 PUBLIC TEST</span><h2>🌐 실시간 온라인 대국</h2><p>서버에 연결한 뒤 실제 대국방을 만들거나 참가할 수 있습니다.</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class=gold onclick="openOnlineLobby()">🚪 온라인 대국방 들어가기</button><button class=dark onclick="openServer23()">🔌 서버 설정</button></div></section><div class=tiles><div class=tile><b>⚡ 빠른 매칭</b><p>비슷한 실력의 상대와 자동 매칭</p></div><div class=tile><b>👥 친구 대국</b><p>방 번호로 지인과 바로 대국</p></div><div class=tile><b>👁️ 관전실</b><p>인기 대국을 함께 관전</p></div></div>`;
  if(page==='ranking') portal.innerHTML=`<section class=hero><h2>🏆 장기왕 랭킹</h2><p>시즌 경쟁으로 장기왕에 도전하세요.</p></section><div class=card style="font-size:18px;line-height:2.2">🥇 1위　천하장기왕　2450<br>🥈 2위　초나라명인　2310<br>🥉 3위　한수고수　2195<br>⭐ 나　${stats.w*100+stats.best*35+level()*20}점</div>`;
  if(page==='shop') portal.innerHTML=`<section class=hero><h2>🛍️ 장기왕 상점</h2><p>대국 포인트로 장기판을 꾸며보세요. 현재 보유 ${stats.point}P</p></section><div class=tiles>
  ${shopTile('🌳','고급 원목 장기판',300)}${shopTile('🌙','달빛 궁궐 장기판',600)}${shopTile('👑','황금 장기왕 세트',1200)}</div>`;
@@ -1592,6 +1609,70 @@ refreshOnline26=async function(r){
   // 페이지를 닫는 순간에는 브라우저 정책상 확실한 서버 업데이트를 보장할 수 없으므로
   // 화면 버튼을 통한 나가기/기권을 정식 경로로 사용한다.
   console.log("27차 온라인 종료/기권/나가기 모듈 준비 완료");
+})();
+</script>
+
+
+<style id="mobile28Style">
+/* ---- 28차: 스마트폰 최적화 ---- */
+html{-webkit-text-size-adjust:100%;touch-action:manipulation}
+button,select,input{min-height:46px;font-size:16px}
+@media(max-width:700px){
+ body{padding-bottom:74px;overflow-x:hidden}
+ header{padding:10px 8px} header h1{font-size:25px}.sub{font-size:12px}
+ nav{position:fixed!important;left:0;right:0;bottom:0;top:auto!important;z-index:100050!important;
+     padding:7px 5px calc(7px + env(safe-area-inset-bottom));gap:4px;background:#111a27f5!important;
+     box-shadow:0 -8px 28px #0008}
+ nav button{flex:1 1 18%;min-width:0;padding:8px 3px!important;font-size:12px!important;line-height:1.2;min-height:48px}
+ main,#portal{padding-left:7px!important;padding-right:7px!important;margin-top:8px!important}
+ .hero{padding:14px 10px;border-radius:14px}.hero h2{font-size:25px!important}.hero p{font-size:14px}
+ .top{gap:5px}.top button,.top select{padding:8px 9px!important;font-size:13px!important;min-height:42px}
+ #b{width:min(98vw,630px)!important;border-width:5px!important}
+ .p{font-size:clamp(12px,5vw,22px)!important;border-width:2px!important}
+ .movehint{width:26px;height:26px}.capturehint{width:40px;height:40px}
+ #matchInfo{font-size:12px;padding:8px;margin:0 3px 7px}
+ #status{font-size:15px;min-height:28px}
+ #careerPanel{margin:8px 7px;padding:10px;font-size:13px}
+ #serverOverlay>div,#onlineOverlay>div,#matchRoom25>div,#loginOverlay>div,#resultOverlay>div,
+ #profileOverlay>div,#shopOverlay>div,#rankOverlay>div{width:98vw!important;max-width:98vw!important;padding:16px!important;border-radius:18px!important}
+ #serverOverlay,#onlineOverlay,#matchRoom25,#loginOverlay,#resultOverlay,#profileOverlay,#shopOverlay,#rankOverlay{padding:5px!important}
+ #onlineOverlay [style*="grid-template-columns"]{grid-template-columns:1fr 1fr!important}
+ #onlineOverlay button{font-size:14px!important}
+ #startOverlay{padding:8px!important}#startOverlay>div{padding:18px 10px!important}
+ #startOverlay h1{font-size:29px!important}#startFormation{width:94%!important}
+}
+@media(max-width:390px){nav button{font-size:11px!important}.p{font-size:16px!important}}
+</style>
+<script id="mobile28Script">
+/* ---- 28차: 모바일 편의 기능 ---- */
+(function(){
+ const PROJECT_URL_28='https://rceyqbtsnhhpoiyekstg.supabase.co';
+ const PUBLISHABLE_KEY_29='여기에_Publishable_Key를_붙여넣으세요';
+ function prefill28(){
+   try{
+     const u=document.getElementById('sbUrl23');
+     if(u && !u.value) u.value=PROJECT_URL_28;
+   }catch(e){}
+ }
+ document.addEventListener('DOMContentLoaded',()=>{
+   prefill28();
+   // 29차 공개용: 배포 전에 위 PUBLISHABLE_KEY_29에 Publishable Key를 한 번만 넣으면
+   // 방문자의 스마트폰/PC에서 서버 설정을 자동 저장하고 자동 연결한다.
+   try{
+     if(PUBLISHABLE_KEY_29 && PUBLISHABLE_KEY_29.length>20 && !PUBLISHABLE_KEY_29.startsWith('여기에_')){
+       localStorage.setItem('janggiKingServer23',JSON.stringify({url:PROJECT_URL_28,key:PUBLISHABLE_KEY_29}));
+       const u=document.getElementById('sbUrl23'), k=document.getElementById('sbKey23');
+       if(u)u.value=PROJECT_URL_28;if(k)k.value=PUBLISHABLE_KEY_29;
+       setTimeout(()=>{try{connectServer23(false)}catch(e){}},80);
+     }
+   }catch(e){}
+   // 모바일에서 서버 설정을 열 때 프로젝트 주소는 자동 입력한다.
+   const old=window.openServer23;
+   if(typeof old==='function') window.openServer23=function(){const r=old.apply(this,arguments);setTimeout(prefill28,20);return r};
+ });
+ // 회전/복귀 후 장기판이 화면 폭에 맞도록 다시 그린다.
+ window.addEventListener('orientationchange',()=>setTimeout(()=>{try{render()}catch(e){}},250));
+ window.addEventListener('pageshow',()=>setTimeout(prefill28,30));
 })();
 </script>
 
