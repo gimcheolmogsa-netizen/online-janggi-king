@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>온라인 장기왕 WEB 32차</title><style>
+<title>온라인 장기왕 WEB 34차</title><style>
 *{box-sizing:border-box}body{margin:0;background:#10151d;color:#fff;font-family:system-ui,"Malgun Gothic",sans-serif}
 header{text-align:center;padding:14px;background:#1d2635}h1{margin:0;font-size:clamp(24px,4vw,38px)}.sub{color:#aeb9ca}
 main{max-width:1100px;margin:auto;padding:14px}.top{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
@@ -64,7 +64,7 @@ button,input,select{font-size:16px}
  #onlineOverlay button,#matchRoom25 button{min-height:46px}
 }
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head><body><header><h1>🏯 온라인 장기왕 WEB</h1><div class="sub">32차 · 온라인 턴 동기화 FIX · 스마트폰 공개 테스트 · Supabase</div></header>
+</head><body><header><h1>🏯 온라인 장기왕 WEB</h1><div class="sub">34차 · 난이도 FIX · AI 안정화 · 온라인 동기화 유지</div></header>
 <nav style="position:sticky;top:0;z-index:20;background:#151d29;border-bottom:1px solid #344055;padding:9px;display:flex;gap:7px;justify-content:center;flex-wrap:wrap">
 <button class="gold" onclick="showPage('game')">⚔️ AI 대국</button>
 <button class="dark menu-active" onclick="showPage('online')">🌐 온라인 대국</button>
@@ -72,7 +72,7 @@ button,input,select{font-size:16px}
 <button class="dark" onclick="showPage('shop')">🛍️ 상점</button>
 <button class="dark" onclick="showPage('mypage')">👤 내 정보</button>
 </nav>
-<div id="portal" style="max-width:1100px;margin:14px auto;padding:0 14px"><section class="hero"><span class="badge">32차 SYNC FIX</span><h2>🌐 실시간 온라인 대국</h2><p>서버에 연결한 뒤 실제 대국방을 만들거나 참가할 수 있습니다.</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="gold" onclick="openOnlineLobby()">🚪 온라인 대국방 들어가기</button><button class="dark" onclick="openServer23()">🔌 서버 설정</button></div></section><div class="tiles"><div class="tile"><b>⚡ 빠른 매칭</b><p>비슷한 실력의 상대와 자동 매칭</p></div><div class="tile"><b>👥 친구 대국</b><p>방 번호로 지인과 바로 대국</p></div><div class="tile"><b>👁️ 관전실</b><p>인기 대국을 함께 관전</p></div></div></div>
+<div id="portal" style="max-width:1100px;margin:14px auto;padding:0 14px"><section class="hero"><span class="badge">34차 LEVEL FIX</span><h2>🌐 실시간 온라인 대국</h2><p>서버에 연결한 뒤 실제 대국방을 만들거나 참가할 수 있습니다.</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="gold" onclick="openOnlineLobby()">🚪 온라인 대국방 들어가기</button><button class="dark" onclick="openServer23()">🔌 서버 설정</button></div></section><div class="tiles"><div class="tile"><b>⚡ 빠른 매칭</b><p>비슷한 실력의 상대와 자동 매칭</p></div><div class="tile"><b>👥 친구 대국</b><p>방 번호로 지인과 바로 대국</p></div><div class="tile"><b>👁️ 관전실</b><p>인기 대국을 함께 관전</p></div></div></div>
 <div id="public30Notice" style="max-width:1100px;margin:0 auto 10px;padding:0 14px;text-align:center;color:#aeb9ca;font-size:13px">📱 스마트폰에서는 링크를 열고 닉네임을 정한 뒤 온라인 대국방에 입장하세요.</div>
 
 
@@ -81,7 +81,7 @@ button,input,select{font-size:16px}
 
 
 
-<div id="serverOverlay" style="display: flex; position: fixed; inset: 0px; background: rgba(5, 10, 18, 0.933); z-index: 100002; align-items: center; justify-content: center; padding: 18px;">
+<div id="serverOverlay" style="display:none; position: fixed; inset: 0px; background: rgba(5, 10, 18, 0.933); z-index: 100002; align-items: center; justify-content: center; padding: 18px;">
  <div style="width:min(620px,95vw);max-height:90vh;overflow:auto;background:#182334;border:1px solid #52657f;border-radius:24px;padding:24px;box-shadow:0 22px 75px #000">
   <h2 style="margin-top:0">🔌 온라인 서버 연결</h2>
   <p style="opacity:.75">Supabase 프로젝트의 주소와 Publishable Key를 넣으면 연결을 시험할 수 있습니다.</p>
@@ -89,13 +89,15 @@ button,input,select{font-size:16px}
   <input id="sbUrl23" placeholder="https://xxxx.supabase.co" style="box-sizing:border-box;width:100%;margin:7px 0 13px;padding:12px;border-radius:10px;border:1px solid #52657f;background:#101722;color:white">
   <label><b>Publishable Key</b></label>
   <input id="sbKey23" type="password" placeholder="sb_publishable_..." style="box-sizing:border-box;width:100%;margin:7px 0 13px;padding:12px;border-radius:10px;border:1px solid #52657f;background:#101722;color:white">
-  <div id="serverStatus23" style="padding:12px;border-radius:12px;background:#101722;margin-bottom:12px">🟢 서버 연결 성공! 다음 단계에서 온라인 방/대국 데이터를 연결할 수 있습니다.</div>
+  <div id="serverStatus23" style="padding:12px;border-radius:12px;background:#101722;margin-bottom:12px">🟡 설정이 저장되어 있습니다. 연결 테스트를 눌러 확인하세요.</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
    <button class="gold" onclick="saveServer23()">💾 저장 + 연결 테스트</button>
    <button class="dark" onclick="clearServer23()">🗑 설정 지우기</button>
   </div>
   <button id="makePublic31Btn" class="gold" style="width:100%;margin-top:9px" onclick="makePublicIndex31()">📦 공개용 index.html 만들기</button>
-   <div id="makePublic31Status" style="font-size:12px;opacity:.75;margin-top:7px;line-height:1.5">✅ <b>index.html 생성 완료!</b><br>이 파일을 GitHub 저장소에 기존 index.html 대신 올리면 새 스마트폰도 자동 서버 연결됩니다.</div>
+   <div id="makePublic31Status" style="font-size:12px;opacity:.75;margin-top:7px;line-height:1.5">
+    PC에 저장된 Publishable Key를 이용해 새 스마트폰에서도 자동 연결되는 공개용 index.html을 만듭니다.
+   </div>
    <button id="serverClose23" class="dark" style="width:100%;margin-top:9px">닫기</button>
   
   <details style="margin-top:12px;background:#101722;border-radius:12px;padding:12px">
@@ -142,7 +144,7 @@ create policy "rooms_update" on public.janggi_rooms for update to anon using (tr
  </div>
 </div>
 
-<div id="onlineOverlay" style="display: flex; position: fixed; inset: 0px; background: rgba(5, 10, 18, 0.933); z-index: 99997; align-items: center; justify-content: center; padding: 18px;">
+<div id="onlineOverlay" style="display:none; position: fixed; inset: 0px; background: rgba(5, 10, 18, 0.933); z-index: 99997; align-items: center; justify-content: center; padding: 18px;">
  <div style="width:min(900px,97vw);max-height:91vh;overflow:auto;background:#182334;border:1px solid #52657f;border-radius:24px;padding:22px;box-shadow:0 22px 75px #000">
   <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
    <div><h2 style="margin:0">🌐 온라인 대국</h2><small style="opacity:.7"><b data-player-name="">장기왕 플레이어</b>님의 온라인 대국 로비</small></div>
@@ -161,15 +163,9 @@ create policy "rooms_update" on public.janggi_rooms for update to anon using (tr
   <div id="onlineStatus" style="margin:14px 0;padding:12px 14px;border-radius:13px;background:#101722">🟢 <b>온라인 서버 연결됨</b> · 실시간 대국 기능 준비 중</div>
   <h3 style="margin-bottom:8px">📋 대국방 목록</h3>
   <div id="roomList"><div style="display:grid;grid-template-columns:70px 1fr 1fr 85px 90px;gap:7px;align-items:center;background:#101722;border:1px solid #2f4159;border-radius:12px;padding:10px;margin:7px 0">
- <b>#16</b><span>테스트방</span><small>👑 장기왕 플레이어</small>
- <span>⚔️ 대국중</span>
- <span style="opacity:.55">입장불가</span></div><div style="display:grid;grid-template-columns:70px 1fr 1fr 85px 90px;gap:7px;align-items:center;background:#101722;border:1px solid #2f4159;border-radius:12px;padding:10px;margin:7px 0">
- <b>#15</b><span>공기계테스트</span><small>👑 장기왕 플레이어</small>
- <span>⚔️ 대국중</span>
- <span style="opacity:.55">입장불가</span></div><div style="display:grid;grid-template-columns:70px 1fr 1fr 85px 90px;gap:7px;align-items:center;background:#101722;border:1px solid #2f4159;border-radius:12px;padding:10px;margin:7px 0">
  <b>#14</b><span>테스트</span><small>👑 장기왕 플레이어</small>
- <span>⚔️ 대국중</span>
- <span style="opacity:.55">입장불가</span></div><div style="display:grid;grid-template-columns:70px 1fr 1fr 85px 90px;gap:7px;align-items:center;background:#101722;border:1px solid #2f4159;border-radius:12px;padding:10px;margin:7px 0">
+ <span>🟢 대기</span>
+ <button class="dark" onclick="joinServerRoom24('14')">참가</button></div><div style="display:grid;grid-template-columns:70px 1fr 1fr 85px 90px;gap:7px;align-items:center;background:#101722;border:1px solid #2f4159;border-radius:12px;padding:10px;margin:7px 0">
  <b>#13</b><span>테스트</span><small>👑 장기왕 플레이어</small>
  <span>🟢 대기</span>
  <button class="dark" onclick="joinServerRoom24('13')">참가</button></div><div style="display:grid;grid-template-columns:70px 1fr 1fr 85px 90px;gap:7px;align-items:center;background:#101722;border:1px solid #2f4159;border-radius:12px;padding:10px;margin:7px 0">
@@ -211,7 +207,7 @@ create policy "rooms_update" on public.janggi_rooms for update to anon using (tr
  <button class="dark" onclick="joinServerRoom24('1')">참가</button></div></div>
   <button class="dark" style="width:100%;margin-top:8px" onclick="loadRooms24()">🔄 서버 대국방 새로고침</button>
   <div style="margin-top:15px;padding:12px;border-radius:13px;background:#101722;opacity:.8">
-   ℹ️ 32차 공개 테스트: 방장과 참가자의 장기판/차례/착수를 서버에서 동기화합니다. 서버 준비가 끝난 뒤 새 방으로 테스트하세요.
+   ℹ️ 34차 공개 테스트: 방장과 참가자의 장기판/차례/착수를 서버에서 동기화합니다. 서버 준비가 끝난 뒤 새 방으로 테스트하세요.
   </div>
  </div>
 </div>
@@ -300,12 +296,12 @@ create policy "rooms_update" on public.janggi_rooms for update to anon using (tr
 <button class="dark" onclick="offerDraw()">🤝 무승부</button>
 <button class="dark" onclick="showNotation()">📜 기보</button>
 <button id="sfxBtn" class="dark" onclick="toggleSfx()">🔊 착수음 ON</button><button id="bgmBtn" class="dark" onclick="toggleBgm()">🎵 BGM ON</button></div>
-<div id="status">🤖 AI 난이도: 중급</div><div class="layout"><aside class="card side"><h3>👑 나의 장기왕</h3>
+<div id="status">🔵 내 차례</div><div class="layout"><aside class="card side"><h3>👑 나의 장기왕</h3>
 <div id="profile" style="font-weight:900;line-height:1.8">Lv.3 도전자<br>💰 540P　🔥 0연승<br>전적 3승 12패 · 최고 2연승<br>EXP 60/150</div>
 <div class="small">대국을 하며 경험치와 포인트를 모으세요.<br>기록은 이 브라우저에 자동 저장됩니다.</div>
 <hr style="border-color:#344055"><h3>🏆 오늘의 로컬 랭킹</h3>
 <div id="rank" class="small">1위 👑 장기왕 도전자 — 430점<br>2위 🤖 한나라 AI — 395점<br>3위 🌱 연습생 — 340점</div></aside>
-<div class="boardwrap"><div id="b"><i class="l v" style="left: 5.5%;"></i><i class="l v" style="left: 16.625%;"></i><i class="l v" style="left: 27.75%;"></i><i class="l v" style="left: 38.875%;"></i><i class="l v" style="left: 50%;"></i><i class="l v" style="left: 61.125%;"></i><i class="l v" style="left: 72.25%;"></i><i class="l v" style="left: 83.375%;"></i><i class="l v" style="left: 94.5%;"></i><i class="l h" style="top: 5%;"></i><i class="l h" style="top: 15%;"></i><i class="l h" style="top: 25%;"></i><i class="l h" style="top: 35%;"></i><i class="l h" style="top: 45%;"></i><i class="l h" style="top: 55%;"></i><i class="l h" style="top: 65%;"></i><i class="l h" style="top: 75%;"></i><i class="l h" style="top: 85%;"></i><i class="l h" style="top: 95%;"></i><div class="p blue" data-id="50a7c6d6-7473-4116-99b3-979466fbdef8" style="left: 5.5%; top: 95%;">車</div><div class="p blue" data-id="ff71f197-5a02-415f-b076-44d4416f84b3" style="left: 16.625%; top: 95%;">馬</div><div class="p blue" data-id="c3e1d78b-07fe-4445-94e6-e92d72def23e" style="left: 27.75%; top: 95%;">象</div><div class="p blue" data-id="c1eb5055-ab07-4167-b4a8-b92dd4fe1fc4" style="left: 38.875%; top: 95%;">士</div><div class="p blue" data-id="65f51e62-408e-4fec-a7f9-27c8c1960f76" style="left: 61.125%; top: 95%;">士</div><div class="p blue" data-id="69fbe138-903e-4012-9914-8e2c251f3e4c" style="left: 72.25%; top: 95%;">象</div><div class="p blue" data-id="2ad8decc-493d-4503-8f02-0acc876fba62" style="left: 83.375%; top: 95%;">馬</div><div class="p blue" data-id="59639897-3b22-48cd-bcfc-d4110c147ca0" style="left: 94.5%; top: 95%;">車</div><div class="p blue" data-id="e99140e3-eab7-4432-b58f-f87b170cd41f" style="left: 50%; top: 85%;">楚</div><div class="p blue" data-id="c8023986-0bc5-4edf-8bf4-815cbca5e7a2" style="left: 16.625%; top: 75%;">包</div><div class="p blue" data-id="2b8336f9-90f7-4045-8a69-b7cf69d020a4" style="left: 83.375%; top: 75%;">包</div><div class="p blue" data-id="6e34e82d-68d1-4b35-962e-7420ac3c5726" style="left: 5.5%; top: 65%;">卒</div><div class="p blue" data-id="70b352a2-ec4e-4dd9-bc9a-7d0f371d8088" style="left: 27.75%; top: 65%;">卒</div><div class="p blue" data-id="8f2d4f42-0896-4f25-8232-362964b0a9eb" style="left: 50%; top: 65%;">卒</div><div class="p blue" data-id="258b4d53-c891-4e95-9188-900ec96c9e23" style="left: 72.25%; top: 65%;">卒</div><div class="p blue" data-id="a146f4ef-e114-4d68-925e-8995d16d4522" style="left: 94.5%; top: 65%;">卒</div><div class="p red" data-id="7b5f93c7-0c17-4426-ab11-e5eb3899c624" style="left: 5.5%; top: 5%;">車</div><div class="p red" data-id="603a9728-d371-434e-9e6c-c657bb652bf3" style="left: 16.625%; top: 5%;">馬</div><div class="p red" data-id="11ad292d-9cb1-49a9-bf0d-be2ad2691c6f" style="left: 27.75%; top: 5%;">象</div><div class="p red" data-id="0a0ed6b9-ff32-4c50-875b-8fabe7d6f907" style="left: 38.875%; top: 5%;">士</div><div class="p red" data-id="23216ccf-dda4-40ea-be9f-1f95d8d7f47a" style="left: 61.125%; top: 5%;">士</div><div class="p red" data-id="1acf764e-9b92-4e28-a658-3b81b4f0ac0a" style="left: 72.25%; top: 5%;">象</div><div class="p red" data-id="a90ec0c3-833e-4de6-9d43-263cb3ec6f06" style="left: 83.375%; top: 5%;">馬</div><div class="p red" data-id="634ef094-825f-4e2b-9364-782c5c289af0" style="left: 94.5%; top: 5%;">車</div><div class="p red" data-id="3df00e1e-37ac-48ff-9b7f-e88d87f476ec" style="left: 50%; top: 15%;">漢</div><div class="p red" data-id="46f578df-8a42-44f7-94fb-c1bf60953fb9" style="left: 16.625%; top: 25%;">包</div><div class="p red" data-id="e50ddabb-89e6-4e54-aae3-f13c4c80a8da" style="left: 83.375%; top: 25%;">包</div><div class="p red" data-id="d791fb24-ade2-4e84-a4db-aad28166e3ef" style="left: 5.5%; top: 35%;">兵</div><div class="p red" data-id="becf0833-7e13-40f0-8ed0-994f9684a362" style="left: 27.75%; top: 35%;">兵</div><div class="p red" data-id="3bd1cfa6-8fac-4ab3-b0e8-2cb5fda25a62" style="left: 50%; top: 35%;">兵</div><div class="p red" data-id="d6fa43c2-f69c-4271-a411-7cca8809c07d" style="left: 72.25%; top: 35%;">兵</div><div class="p red" data-id="0e55a035-c49f-4ea2-8c1f-fbb1f498bcf9" style="left: 94.5%; top: 35%;">兵</div></div></div><aside class="card side"><h3>🎯 오늘의 목표</h3>
+<div class="boardwrap"><div id="b"><i class="l v" style="left: 5.5%;"></i><i class="l v" style="left: 16.625%;"></i><i class="l v" style="left: 27.75%;"></i><i class="l v" style="left: 38.875%;"></i><i class="l v" style="left: 50%;"></i><i class="l v" style="left: 61.125%;"></i><i class="l v" style="left: 72.25%;"></i><i class="l v" style="left: 83.375%;"></i><i class="l v" style="left: 94.5%;"></i><i class="l h" style="top: 5%;"></i><i class="l h" style="top: 15%;"></i><i class="l h" style="top: 25%;"></i><i class="l h" style="top: 35%;"></i><i class="l h" style="top: 45%;"></i><i class="l h" style="top: 55%;"></i><i class="l h" style="top: 65%;"></i><i class="l h" style="top: 75%;"></i><i class="l h" style="top: 85%;"></i><i class="l h" style="top: 95%;"></i><div class="p blue" data-id="1124fd8c-4423-4b4a-823b-5862799be83e" style="left: 5.5%; top: 95%;">車</div><div class="p blue" data-id="1b578698-752c-4bcf-bfeb-2b62a455f9a6" style="left: 16.625%; top: 95%;">馬</div><div class="p blue" data-id="54ab9f8d-9ee0-49da-a0c5-8c30d0cc2554" style="left: 27.75%; top: 95%;">象</div><div class="p blue" data-id="ea2a6a30-8c49-4bf9-9000-dfa12f68a4fe" style="left: 38.875%; top: 95%;">士</div><div class="p blue" data-id="060c05ae-0b08-44ec-a4df-bafdf6047a97" style="left: 61.125%; top: 95%;">士</div><div class="p blue" data-id="5a91ee7c-5634-4867-8ac0-2eba30340e79" style="left: 72.25%; top: 95%;">馬</div><div class="p blue" data-id="6e54ebd5-7a71-42e1-a9f7-9b288ba763d2" style="left: 83.375%; top: 95%;">象</div><div class="p blue" data-id="8e030a96-c12a-4aac-bb27-72837daa8cf0" style="left: 94.5%; top: 95%;">車</div><div class="p blue" data-id="1c2ed2d5-5980-4b0f-bed7-3c472aa36331" style="left: 50%; top: 85%;">楚</div><div class="p blue" data-id="7ad0b0f6-8283-4df6-8e53-675e1d393e7b" style="left: 16.625%; top: 75%;">包</div><div class="p blue" data-id="d689a79a-ce26-46d7-9542-d85f590b1dc6" style="left: 83.375%; top: 75%;">包</div><div class="p blue" data-id="b593f235-55e0-4c29-9333-7c5d55f4ee74" style="left: 5.5%; top: 65%;">卒</div><div class="p blue" data-id="c1c3f48b-ce2b-4593-9db7-f1965f633fb4" style="left: 27.75%; top: 65%;">卒</div><div class="p blue" data-id="26d506b1-0427-42e5-9299-737f7eee8d04" style="left: 50%; top: 65%;">卒</div><div class="p blue" data-id="55b856ea-8216-480d-b550-3e1a7f7db6c9" style="left: 72.25%; top: 65%;">卒</div><div class="p blue" data-id="05d47923-a918-43a8-b5df-ffbdb756fa23" style="left: 94.5%; top: 65%;">卒</div><div class="p red" data-id="dce9abca-7c1a-4d98-94f9-2cdffcae1bd8" style="left: 5.5%; top: 5%;">車</div><div class="p red" data-id="547be463-6879-497e-8229-c11e046b0e36" style="left: 16.625%; top: 5%;">象</div><div class="p red" data-id="cf09ce98-0802-4baa-9020-772a5114801f" style="left: 27.75%; top: 5%;">馬</div><div class="p red" data-id="2d0cf06d-4b94-4636-9f1e-eea8343630f7" style="left: 38.875%; top: 5%;">士</div><div class="p red" data-id="177b9cbd-0d72-4fe3-a2b4-7b5a73a5d209" style="left: 61.125%; top: 5%;">士</div><div class="p red" data-id="8b54cb61-0d23-4fc1-a8ab-232ffd4106e6" style="left: 72.25%; top: 5%;">象</div><div class="p red" data-id="04faac08-84d9-47a9-af7a-1e83ee87fa29" style="left: 83.375%; top: 5%;">馬</div><div class="p red" data-id="173f8c88-c44f-4b68-b254-44fbd4aa8527" style="left: 94.5%; top: 5%;">車</div><div class="p red" data-id="729296fe-a564-4672-97a0-9aaca279356c" style="left: 50%; top: 15%;">漢</div><div class="p red" data-id="05fc31ea-cf49-4040-b8d2-856393c15170" style="left: 16.625%; top: 25%;">包</div><div class="p red" data-id="9594c98c-25a2-4b9b-b60c-9a19b52e2974" style="left: 83.375%; top: 25%;">包</div><div class="p red" data-id="f00d9b19-3658-4c90-b304-55caf3bf1caf" style="left: 5.5%; top: 35%;">兵</div><div class="p red" data-id="b4009296-1c70-4906-bb70-acdd5f7b19e3" style="left: 27.75%; top: 35%;">兵</div><div class="p red" data-id="62f5c8bb-348e-4693-9e76-94bd90c4fda1" style="left: 50%; top: 35%;">兵</div><div class="p red" data-id="6a0b410c-8d02-45ba-b258-8056f55f8562" style="left: 72.25%; top: 35%;">兵</div><div class="p red" data-id="9772f15a-bba4-42b2-aebd-4d97c09fcf39" style="left: 94.5%; top: 35%;">兵</div></div></div><aside class="card side"><h3>🎯 오늘의 목표</h3>
 <div id="missions" class="small">✅ 오늘 대국 1판<br>✅ 첫 승리 달성<br>⬜ 2연승 도전</div>
 <hr style="border-color:#344055"><h3>🎁 대국 보상</h3>
 <div class="small">승리: +100P / +60 EXP<br>패배: +20P / +15 EXP<br>연승할수록 장기왕 등급이 올라갑니다.</div>
@@ -560,7 +556,7 @@ function showPage(page){
  const portal=document.querySelector('#portal'), game=document.querySelector('#gamePage');
  if(page==='game'){portal.innerHTML='';game.style.display='block';setTimeout(skinStyle,30);window.scrollTo({top:0,behavior:'smooth'});return}
  game.style.display='none';
- if(page==='online') portal.innerHTML=`<section class=hero><span class=badge>32차 SYNC FIX</span><h2>🌐 실시간 온라인 대국</h2><p>서버에 연결한 뒤 실제 대국방을 만들거나 참가할 수 있습니다.</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class=gold onclick="openOnlineLobby()">🚪 온라인 대국방 들어가기</button><button class=dark onclick="openServer23()">🔌 서버 설정</button></div></section><div class=tiles><div class=tile><b>⚡ 빠른 매칭</b><p>비슷한 실력의 상대와 자동 매칭</p></div><div class=tile><b>👥 친구 대국</b><p>방 번호로 지인과 바로 대국</p></div><div class=tile><b>👁️ 관전실</b><p>인기 대국을 함께 관전</p></div></div>`;
+ if(page==='online') portal.innerHTML=`<section class=hero><span class=badge>34차 LEVEL FIX</span><h2>🌐 실시간 온라인 대국</h2><p>서버에 연결한 뒤 실제 대국방을 만들거나 참가할 수 있습니다.</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class=gold onclick="openOnlineLobby()">🚪 온라인 대국방 들어가기</button><button class=dark onclick="openServer23()">🔌 서버 설정</button></div></section><div class=tiles><div class=tile><b>⚡ 빠른 매칭</b><p>비슷한 실력의 상대와 자동 매칭</p></div><div class=tile><b>👥 친구 대국</b><p>방 번호로 지인과 바로 대국</p></div><div class=tile><b>👁️ 관전실</b><p>인기 대국을 함께 관전</p></div></div>`;
  if(page==='ranking') portal.innerHTML=`<section class=hero><h2>🏆 장기왕 랭킹</h2><p>시즌 경쟁으로 장기왕에 도전하세요.</p></section><div class=card style="font-size:18px;line-height:2.2">🥇 1위　천하장기왕　2450<br>🥈 2위　초나라명인　2310<br>🥉 3위　한수고수　2195<br>⭐ 나　${stats.w*100+stats.best*35+level()*20}점</div>`;
  if(page==='shop') portal.innerHTML=`<section class=hero><h2>🛍️ 장기왕 상점</h2><p>대국 포인트로 장기판을 꾸며보세요. 현재 보유 ${stats.point}P</p></section><div class=tiles>
  ${shopTile('🌳','고급 원목 장기판',300)}${shopTile('🌙','달빛 궁궐 장기판',600)}${shopTile('👑','황금 장기왕 세트',1200)}</div>`;
@@ -1886,6 +1882,192 @@ refreshMatch25 = async function(){
     online32Refreshing=false;
   }
 };
+</script>
+
+
+<script>
+/* ===== 33차: AI 생각중 멈춤 FIX =====
+   온라인 대국 후 남아 있던 online26 상태가 AI 스케줄러를 막는 문제를 정리한다. */
+function leaveOnlineMode33(){
+  try{ online26=false; online26Applying=false; online26Ready=false; online26MoveNo=-1; }catch(e){}
+  try{ if(room25Timer){clearInterval(room25Timer);room25Timer=null;} room25Id=null;room25Role=null; }catch(e){}
+  try{
+    if(stableAITimer){clearTimeout(stableAITimer);stableAITimer=null;}
+    if(aiWatchdog){clearTimeout(aiWatchdog);aiWatchdog=null;}
+    aiBusy=false;
+  }catch(e){}
+}
+
+const showPageBase33=showPage;
+showPage=function(page){
+  if(page==='game')leaveOnlineMode33();
+  return showPageBase33(page);
+};
+
+const startMatchBase33=startMatch;
+startMatch=function(){leaveOnlineMode33();return startMatchBase33();};
+
+const newMatchBase33=newMatch;
+newMatch=function(){leaveOnlineMode33();return newMatchBase33();};
+
+function forceAI33(){
+  if(over||turn!=='red'||online26)return;
+  if(stableAITimer){clearTimeout(stableAITimer);stableAITimer=null;}
+  aiBusy=false;
+  ST.textContent='🤖 컴퓨터가 생각 중...';
+
+  stableAITimer=setTimeout(()=>{
+    stableAITimer=null;
+    if(over||turn!=='red'||online26)return;
+    try{aiBusy=false;ai();}catch(e){aiBusy=false;}
+
+    setTimeout(()=>{
+      if(over||turn!=='red'||online26)return;
+      aiBusy=false;
+      let m=[];
+      try{m=fastAIMoves();}catch(e){}
+      if(m.length){
+        const caps=m.filter(z=>z.cap);
+        const pool=caps.length?caps:m;
+        const q=pool[Math.floor(Math.random()*pool.length)];
+        move(q.p,q.x,q.y,true);
+      }else{
+        turn='blue';sel=null;render();updateMatchInfo();updateScoreInfo();startTurnClock();
+        ST.textContent='🔵 초(楚) 차례입니다.';
+      }
+    },220);
+  },120);
+}
+
+scheduleStableAI=function(){
+  if(online26||over||turn!=='red')return;
+  forceAI33();
+};
+
+/* 혹시 호출이 누락되어도 AI 차례가 0.7초 이상 멈추지 않게 복구 */
+setInterval(()=>{
+  try{
+    const gp=document.getElementById('gamePage');
+    if(gp&&gp.style.display==='block'&&!online26&&!over&&turn==='red'&&!stableAITimer&&!aiBusy){
+      forceAI33();
+    }
+  }catch(e){}
+},700);
+</script>
+
+
+<script>
+/* ===== 34차: AI 난이도 체감 분리 + 새 대국 선택 난이도 유지 ===== */
+const DIFF34_KEY='janggiKingDifficulty34';
+
+function normalizeDifficulty34(v){
+  return (v==='easy'||v==='normal'||v==='hard')?v:'normal';
+}
+function rememberDifficulty34(v){
+  difficulty=normalizeDifficulty34(v);
+  try{localStorage.setItem(DIFF34_KEY,difficulty)}catch(e){}
+  document.querySelectorAll('[data-diff]').forEach(b=>{
+    b.classList.toggle('active',b.dataset.diff===difficulty);
+  });
+  const d=document.getElementById('difficultyText');
+  if(d)d.textContent=difficulty==='easy'?'초급 · 매우 쉬움':difficulty==='hard'?'상급 · 어려움':'중급 · 보통';
+}
+
+/* 기존 난이도 버튼 함수는 저장까지 하도록 확장 */
+const setDifficultyBase34=setDifficulty;
+setDifficulty=function(v){
+  setDifficultyBase34(normalizeDifficulty34(v));
+  rememberDifficulty34(v);
+};
+
+/* 새 대국/시작에서 선택 난이도가 초기화되어도 즉시 복원 */
+function keepDifficulty34(fn){
+  return function(){
+    const keep=normalizeDifficulty34(difficulty || localStorage.getItem(DIFF34_KEY));
+    const r=fn.apply(this,arguments);
+    setTimeout(()=>rememberDifficulty34(keep),0);
+    return r;
+  };
+}
+startMatch=keepDifficulty34(startMatch);
+newMatch=keepDifficulty34(newMatch);
+
+/* 34차 AI:
+   초급: 매우 쉬움 - 대부분 무작위, 잡을 수 있어도 자주 놓침.
+   중급: 보통 - 잡기와 중앙/전진을 적당히 고려.
+   상급: 어려움 - 큰 기물 포획과 위치를 강하게 우선. */
+ai=function(){
+  if(over||turn!=='red'||aiBusy||online26)return;
+  aiBusy=true;
+  try{
+    const m=fastAIMoves();
+    if(!m.length){
+      aiBusy=false;over=true;
+      if(turnTimer)clearInterval(turnTimer);
+      ST.textContent='🎉 컴퓨터가 둘 수 없습니다. 초(楚) 승리!';
+      saveHistory('승리');reward(true);render();
+      setTimeout(()=>showResult(true,'상대가 둘 수 없음'),350);
+      return;
+    }
+
+    const val={K:100000,R:140,C:75,H:55,E:35,A:25,P:15};
+    let q;
+
+    if(difficulty==='easy'){
+      /* 매우 쉬움: 90% 완전 랜덤.
+         포획 가능해도 대부분 놓쳐 초보자가 편하게 이길 수 있게 한다. */
+      const quiet=m.filter(z=>!z.cap);
+      if(quiet.length && Math.random()<0.90){
+        q=quiet[Math.floor(Math.random()*quiet.length)];
+      }else{
+        q=m[Math.floor(Math.random()*m.length)];
+      }
+    }else{
+      let best=-1e18,candidates=[];
+      for(const z of m){
+        let score=0;
+        const capValue=z.cap?(val[z.cap.t.toUpperCase()]||0):0;
+
+        if(difficulty==='normal'){
+          score += capValue*1.0;
+          score += (4-Math.abs(4-z.x))*2;
+          score += (9-z.y)*0.5;
+          score += Math.random()*18;
+        }else{
+          score += capValue*2.4;
+          score += (4-Math.abs(4-z.x))*4;
+          score += (9-z.y)*1.3;
+          if(z.cap && z.cap.t.toUpperCase()==='K')score+=1000000;
+          const pv=val[z.p.t.toUpperCase()]||10;
+          if(z.cap && capValue>=pv)score+=30;
+          score += Math.random()*3;
+        }
+        if(score>best+0.001){best=score;candidates=[z]}
+        else if(Math.abs(score-best)<0.001)candidates.push(z);
+      }
+      q=candidates[Math.floor(Math.random()*candidates.length)];
+    }
+
+    aiBusy=false;
+    move(q.p,q.x,q.y,true);
+  }catch(e){
+    aiBusy=false;
+    const m=fastAIMoves();
+    if(m.length){
+      const q=m[Math.floor(Math.random()*m.length)];
+      move(q.p,q.x,q.y,true);
+    }else{
+      turn='blue';sel=null;render();updateMatchInfo();startTurnClock();
+    }
+  }
+};
+
+/* 33차 forceAI가 호출하는 ai()도 위 34차 난이도 AI를 사용한다. */
+try{
+  const saved=localStorage.getItem(DIFF34_KEY);
+  if(saved) rememberDifficulty34(saved);
+  else rememberDifficulty34(difficulty||'normal');
+}catch(e){}
 </script>
 
 </body></html>
